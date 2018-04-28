@@ -131,14 +131,16 @@ bool _matchAny(char * check){
 // Funcao do analisador lexico
 void analisadorLexico(char *input, char *output){
 	char *codigo = _ler(input);
+	char *palavra = malloc(256)
 	printf("PROGRAMA LIDO (Espacos extras, tabs e enters sao ignorados):\n\n%s\n\n\n", codigo);
 	printf("GERANDO TOKENS:\n\n");
 	int i = -1;
+	int j = 0;
 q0:
 	i++;
-	if (codigo[i] == 'p') {
-		goto q1;
-	} else if (codigo[i] == ';') {
+	memset(palavra, 0, 255);
+	palavra[j++] = codigo[i];
+	if (codigo[i] == ';') {
 		goto q147;
 	} else if (codigo[i] == ':') {
 		goto q148;
@@ -229,6 +231,7 @@ q0:
 	}
 q1:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'r') {
 		goto q2;
 	} else {
@@ -236,6 +239,7 @@ q1:
 	}
 q2:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
 		goto q3;
 	} else {
@@ -243,6 +247,7 @@ q2:
 	}
 q3:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'g') {
 		goto q4;
 	} else if (codigo[i] == 'c') {
@@ -252,6 +257,7 @@ q3:
 	}
 q4:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'r') {
 		goto q5;
 	} else {
@@ -259,6 +265,7 @@ q4:
 	}
 q5:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
 		goto q6;
 	} else {
@@ -266,6 +273,7 @@ q5:
 	}
 q6:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'm') {
 		goto q7;
 	} else {
@@ -273,6 +281,7 @@ q6:
 	}
 q7:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
 		goto q8;
 	} else {
@@ -280,6 +289,7 @@ q7:
 	}
 q8:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == ' ') {
 		printf("programa\n");
 		_escrever(output, 'programa\n');
@@ -289,6 +299,7 @@ q8:
 	}
 q10:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'e') {
 		goto q11;
 	} else {
@@ -296,6 +307,7 @@ q10:
 	}
 q11:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'd') {
 		goto q12;
 	} else {
@@ -303,6 +315,7 @@ q11:
 	}
 q12:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'i') {
 		goto q13;
 	} else {
@@ -310,6 +323,7 @@ q12:
 	}
 q13:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'm') {
 		goto q14;
 	} else {
@@ -317,6 +331,7 @@ q13:
 	}
 q14:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'e') {
 		goto q15;
 	} else {
@@ -324,6 +339,7 @@ q14:
 	}
 q15:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'n') {
 		goto q16;
 	} else {
@@ -331,6 +347,7 @@ q15:
 	}
 q16:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 't') {
 		goto q17;
 	} else {
@@ -338,6 +355,7 @@ q16:
 	}
 q17:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
 		goto q18;
 	} else {
@@ -345,6 +363,7 @@ q17:
 	}
 q18:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == ' ') {
 		printf("procedimento\n");
 		_escrever(output, 'procedimento\n');
@@ -354,6 +373,7 @@ q18:
 	}
 q82:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'e') {
 		goto q83;
 	} else {
@@ -361,17 +381,19 @@ q82:
 	}
 q83:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == ' ') {
 		printf("se\n");
 		_escrever(output, 'se\n');
 		goto q0;
-	else if (codigo[i] == 'n') {
+	} else if (codigo[i] == 'n') {
 		goto q85;
 	} else {
 		goto q117;
 	}
 q85:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
 		goto q86;
 	} else {
@@ -379,6 +401,7 @@ q85:
 	}
 q86:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
 		goto q86;
 	} else {
@@ -386,6 +409,7 @@ q86:
 	}
 q87:
 	i++;
+	palavra[j++] = codigo[i];
 	if (codigo[i] == ' ') {
 		printf("senao\n");
 		_escrever(output, 'senao\n');
