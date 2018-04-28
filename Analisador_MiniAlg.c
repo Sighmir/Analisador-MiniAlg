@@ -17,24 +17,9 @@
 #include <stdbool.h>
 #include <string.h>
 
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////// CONFIGURACAO DOS ARQUIVOS //////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-#define ENTRADA "MiniAlg.txt" // Arquivo com o codigo MiniAlg a ser analisado.
-#define SAIDA "Tokens.txt" // Arquivo que sera gerado com os Tokens.
-
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// DECLARACAO DE FUNCOES E VARIAVEIS //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Variaveis do analisador
-int i; // Index do elemento a ser analisado
-char * codigo; // Codigo ou String a ser analisada
-long tam; // Tamanho dessa string
 
 // Funcoes do analisador (Descricao esta acima da funcao)
 char * _ler(char * nome); // Funcao que le o arquivo configurado na linha 25 como ENTRADA
@@ -42,41 +27,6 @@ void _escrever(char * nome, char *texto); // Funcao que escreve no arquivo confi
 char _lookahead(); // Funcao que retorna o valor do proximo simbolo lexico sem consumi-lo.
 char _match(); // Funcao que retorna o valor do proximo simbolo lexico consumindo-o.
 bool _matchAny(char * check); // Funcao que verifica se o valor do proximo simbolo lexico se iguala a qualquer um dos simbolos passados no argumento check como um array de simbolos.
-
-// Funcoes do analisador lexico
-bool verdadeiro(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'verdadeiro '
-bool falso(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'falso '
-bool booleano(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'booleano '
-bool inteiro(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'inteiro '
-bool palavra_programa(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'programa '
-bool fimprograma(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'fimprograma '
-bool procedimento(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'procedimento '
-bool fimprocedimento(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'fimprocedimento '
-bool enquanto(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'enquanto '
-bool escreva(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'escreva '
-bool faca(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'faca '
-bool fimenquanto(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'fimenquanto '
-bool se(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'se '
-bool fimse(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'fimse '
-bool senao(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'senao '
-bool entao(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'entao '
-bool virgula(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a ', '
-bool ponto_e_virgula(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '; '
-bool dois_pontos(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a ': '
-bool parenteses_esquerda(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '( '
-bool parenteses_direita(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a ') '
-bool operador_div(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'div '
-bool operador_mul(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'mul '
-bool operador_mais(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '+ '
-bool operador_menos(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '- '
-bool operador_igual(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '= '
-bool relacao_menor(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '< '
-bool relacao_maior(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '> '
-bool relacao_igual(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '== '
-bool relacao_diferente(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '<> '
-bool relacao_menor_igual(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '<= '
-bool relacao_maior_igual(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '>= '
-bool palavra_reservada(bool write, bool error); // Funcao que verifica se a proxima sequencia lexica existente tem valor igual a qualquer uma das palavras reservadas
 
 // Funcoes do analisador sintatico
 bool letra(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <letra>
@@ -112,13 +62,11 @@ bool programa(bool write, bool error); // Funcao que verifica se a proxima seque
 // bool error -> Define se o token sera escrito em caso de erro.
 // Esta opcao e util por que muitas vezes um token e parte para gerar outro token, e portanto ele nao deve ser escrito.
 
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// FUNCOES DO ANALISADOR //////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Funcao que le o arquivo configurado na linha 25 como ENTRADA
+// Funcao que le o arquivo
 char * _ler(char * nome) {
     FILE *arquivo = fopen(nome, "r");
     char *codigo;
@@ -146,7 +94,7 @@ char * _ler(char * nome) {
     return codigo;
 }
 
-// Funcao que escreve no arquivo configurado na linha 26 como SAIDA
+// Funcao que escreve no arquivo
 void _escrever(char * nome, char *texto) {
     FILE *arquivo = fopen(nome, "a");
 
@@ -180,978 +128,207 @@ bool _matchAny(char * check){
 ////////////////////////////////////// ANALISADOR LEXICO //////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'verdadeiro '
-bool verdadeiro(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'v') &&
-		(_match() == 'v') &&
-		(_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 'r') &&
-		(_match() == 'r') &&
-		(_lookahead() == 'd') &&
-		(_match() == 'd') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == 'd') &&
-		(_match() == 'd') &&
-		(_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 'i') &&
-		(_match() == 'i') &&
-		(_lookahead() == 'r') &&
-		(_match() == 'r') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("verdadeiro ");
-			_escrever(SAIDA, "verdadeiro ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,verdadeiro ");
-			_escrever(SAIDA, "ERRO LEXICO,verdadeiro ");
-		}
-		return false;
+// Funcao do analisador lexico
+void analisadorLexico(char *input, char *output){
+	char *codigo = _ler(input);
+	int i = 0;
+q0:
+	if (codigo[i] == 'p') {
+		goto q1;
+	} else if (codigo[i] == ';') {
+		goto q147;
+	} else if (codigo[i] == ':') {
+		goto q148;
+	} else if (codigo[i] == '\'') {
+		goto q149;
+	} else if (codigo[i] == '(') {
+		goto q150;
+	} else if (codigo[i] == ')') {
+		goto q151;
+	} else if (codigo[i] == '<') {
+		goto q133;
+	} else if (codigo[i] == '>') {
+		goto q134;
+	} else if (codigo[i] == '=') {
+		goto q135;
+	} else if (codigo[i] == 'v') {
+		goto q106;
+	} else if (codigo[i] == 'b') {
+		goto q97;
+	} else if (codigo[i] == 'i') {
+		goto q89;
+	} else if (codigo[i] == 's') {
+		goto q82;
+	} else if (codigo[i] == 'p') {
+		goto q1;
+	} else if (codigo[i] == 'f') {
+		goto q20;
+	} else if (codigo[i] == 'e') {
+		goto q62;
+	} else if (codigo[i] == 'd') {
+		goto q121;
+	} else if (codigo[i] == 'm') {
+		goto q125;
+	} else if (
+		codigo[i] == 'a' || codigo[i] == 'A' ||
+		codigo[i] == 'b' || codigo[i] == 'B' ||
+		codigo[i] == 'c' || codigo[i] == 'C' ||
+		codigo[i] == 'd' || codigo[i] == 'D' ||
+		codigo[i] == 'e' || codigo[i] == 'E' ||
+		codigo[i] == 'f' || codigo[i] == 'F' ||
+		codigo[i] == 'g' || codigo[i] == 'G' ||
+		codigo[i] == 'h' || codigo[i] == 'H' ||
+		codigo[i] == 'i' || codigo[i] == 'I' ||
+		codigo[i] == 'j' || codigo[i] == 'J' ||
+		codigo[i] == 'k' || codigo[i] == 'K' ||
+		codigo[i] == 'l' || codigo[i] == 'L' ||
+		codigo[i] == 'm' || codigo[i] == 'M' ||
+		codigo[i] == 'n' || codigo[i] == 'N' ||
+		codigo[i] == 'o' || codigo[i] == 'O' ||
+		codigo[i] == 'p' || codigo[i] == 'P' ||
+		codigo[i] == 'q' || codigo[i] == 'Q' ||
+		codigo[i] == 'r' || codigo[i] == 'R' ||
+		codigo[i] == 's' || codigo[i] == 'S' ||
+		codigo[i] == 't' || codigo[i] == 'T' ||
+		codigo[i] == 'u' || codigo[i] == 'U' ||
+		codigo[i] == 'v' || codigo[i] == 'V' ||
+		codigo[i] == 'w' || codigo[i] == 'W' ||
+		codigo[i] == 'x' || codigo[i] == 'X' ||
+		codigo[i] == 'y' || codigo[i] == 'Y' ||
+		codigo[i] == 'z' || codigo[i] == 'Z'
+	) {
+		goto q117;
+	} else if (
+		codigo[i] == '0' ||
+		codigo[i] == '1' ||
+		codigo[i] == '2' ||
+		codigo[i] == '3' ||
+		codigo[i] == '4' ||
+		codigo[i] == '5' ||
+		codigo[i] == '6' || 
+		codigo[i] == '7' ||
+		codigo[i] == '8' ||
+		codigo[i] == '9'
+	) {
+		goto q119;
+	} else if (codigo[i] == '+') {
+		goto q129;
+	} else if (codigo[i] == '-') {
+		goto q130;
+	} else if (codigo[i] == '/') {
+		goto q157;
+	} else if (codigo[i] == '*') {
+		goto q158;
+	else {
+		_escrever(output, "<ERRO LEXICO>\n");
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'falso '
-bool falso(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'f') &&
-		(_match() == 'f') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == 'l') &&
-		(_match() == 'l') &&
-		(_lookahead() == 's') &&
-		(_match() == 's') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("falso ");
-			_escrever(SAIDA, "falso ");
-		}
-		return true;
+q1:
+	if (codigo[i] == 'r') {
+		goto q2;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,falso ");
-			_escrever(SAIDA, "ERRO LEXICO,falso ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'booleano '
-bool booleano(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'b') &&
-		(_match() == 'b') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == 'l') &&
-		(_match() == 'l') &&
-		(_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == 'n') &&
-		(_match() == 'n') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("booleano ");
-			_escrever(SAIDA, "booleano ");
-		}
-		return true;
+q2:
+	if (codigo[i] == 'o') {
+		goto q3;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,booleano ");
-			_escrever(SAIDA, "ERRO LEXICO,booleano ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'inteiro '
-bool inteiro(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'i') &&
-		(_match() == 'i') &&
-		(_lookahead() == 'n') &&
-		(_match() == 'n') &&
-		(_lookahead() == 't') &&
-		(_match() == 't') &&
-		(_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 'i') &&
-		(_match() == 'i') &&
-		(_lookahead() == 'r') &&
-		(_match() == 'r') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("inteiro ");
-			_escrever(SAIDA, "inteiro ");
-		}
-		return true;
+q3:
+	if (codigo[i] == 'g') {
+		goto q4;
+	} else if (codigo[i] == 'c') {
+		goto q10;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,inteiro ");
-			_escrever(SAIDA, "ERRO LEXICO,inteiro ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'programa '
-bool palavra_programa(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'p') &&
-		(_match() == 'p') &&
-		(_lookahead() == 'r') &&
-		(_match() == 'r') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == 'g') &&
-		(_match() == 'g') &&
-		(_lookahead() == 'r') &&
-		(_match() == 'r') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == 'm') &&
-		(_match() == 'm') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("programa ");
-			_escrever(SAIDA, "programa ");
-		}
-		return true;
+q4:
+	if (codigo[i] == 'r') {
+		goto q5;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,programa ");
-			_escrever(SAIDA, "ERRO LEXICO,programa ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'fimprograma '
-bool fimprograma(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'f') &&
-		(_match() == 'f') &&
-		(_lookahead() == 'i') &&
-		(_match() == 'i') &&
-		(_lookahead() == 'm') &&
-		(_match() == 'm') &&
-		(_lookahead() == 'p') &&
-		(_match() == 'p') &&
-		(_lookahead() == 'r') &&
-		(_match() == 'r') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == 'g') &&
-		(_match() == 'g') &&
-		(_lookahead() == 'r') &&
-		(_match() == 'r') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == 'm') &&
-		(_match() == 'm') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("fimprograma ");
-			_escrever(SAIDA, "fimprograma ");
-			printf("\n");
-			_escrever(SAIDA, "\n");
-		}
-		return true;
+q5:
+	if (codigo[i] == 'a') {
+		goto q6;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,fimprograma ");
-			_escrever(SAIDA, "ERRO LEXICO,fimprograma ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'procedimento '
-bool procedimento(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'p') &&
-		(_match() == 'p') &&
-		(_lookahead() == 'r') &&
-		(_match() == 'r') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == 'c') &&
-		(_match() == 'c') &&
-		(_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 'd') &&
-		(_match() == 'd') &&
-		(_lookahead() == 'i') &&
-		(_match() == 'i') &&
-		(_lookahead() == 'm') &&
-		(_match() == 'm') &&
-		(_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 'n') &&
-		(_match() == 'n') &&
-		(_lookahead() == 't') &&
-		(_match() == 't') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("procedimento ");
-			_escrever(SAIDA, "procedimento ");
-		}
-		return true;
+q6:
+	if (codigo[i] == 'm') {
+		goto q7;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,procedimento ");
-			_escrever(SAIDA, "ERRO LEXICO,procedimento ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'fimprocedimento '
-bool fimprocedimento(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'f') &&
-		(_match() == 'f') &&
-		(_lookahead() == 'i') &&
-		(_match() == 'i') &&
-		(_lookahead() == 'm') &&
-		(_match() == 'm') &&
-		(_lookahead() == 'p') &&
-		(_match() == 'p') &&
-		(_lookahead() == 'r') &&
-		(_match() == 'r') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == 'c') &&
-		(_match() == 'c') &&
-		(_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 'd') &&
-		(_match() == 'd') &&
-		(_lookahead() == 'i') &&
-		(_match() == 'i') &&
-		(_lookahead() == 'm') &&
-		(_match() == 'm') &&
-		(_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 'n') &&
-		(_match() == 'n') &&
-		(_lookahead() == 't') &&
-		(_match() == 't') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("fimprocedimento ");
-			_escrever(SAIDA, "fimprocedimento ");
-			printf("\n");
-			_escrever(SAIDA, "\n");
-		}
-		return true;
+q7:
+	if (codigo[i] == 'a') {
+		goto q8;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,fimprocedimento ");
-			_escrever(SAIDA, "ERRO LEXICO,fimprocedimento ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'enquanto '
-bool enquanto(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 'n') &&
-		(_match() == 'n') &&
-		(_lookahead() == 'q') &&
-		(_match() == 'q') &&
-		(_lookahead() == 'u') &&
-		(_match() == 'u') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == 'n') &&
-		(_match() == 'n') &&
-		(_lookahead() == 't') &&
-		(_match() == 't') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("enquanto ");
-			_escrever(SAIDA, "enquanto ");
-		}
-		return true;
+q8:
+	if (codigo[i] == ' ') {
+		_escrever(output, 'programa\n');
+		goto q0;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,enquanto ");
-			_escrever(SAIDA, "ERRO LEXICO,enquanto ");
-		}
-		return false;
+		_escrever(output, '<ERRO LEXICO>\n');
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'escreva '
-bool escreva(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 's') &&
-		(_match() == 's') &&
-		(_lookahead() == 'c') &&
-		(_match() == 'c') &&
-		(_lookahead() == 'r') &&
-		(_match() == 'r') &&
-		(_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 'v') &&
-		(_match() == 'v') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("escreva ");
-			_escrever(SAIDA, "escreva ");
-		}
-		return true;
+q10:
+	if (codigo[i] == 'e') {
+		goto q11;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,escreva ");
-			_escrever(SAIDA, "ERRO LEXICO,escreva ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'faca '
-bool faca(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'f') &&
-		(_match() == 'f') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == 'c') &&
-		(_match() == 'c') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("faca ");
-			_escrever(SAIDA, "faca ");
-			printf("\n");
-			_escrever(SAIDA, "\n");
-		}
-		return true;
+q11:
+	if (codigo[i] == 'd') {
+		goto q12;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,faca ");
-			_escrever(SAIDA, "ERRO LEXICO,faca ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'fimenquanto '
-bool fimenquanto(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'f') &&
-		(_match() == 'f') &&
-		(_lookahead() == 'i') &&
-		(_match() == 'i') &&
-		(_lookahead() == 'm') &&
-		(_match() == 'm') &&
-		(_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 'n') &&
-		(_match() == 'n') &&
-		(_lookahead() == 'q') &&
-		(_match() == 'q') &&
-		(_lookahead() == 'u') &&
-		(_match() == 'u') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == 'n') &&
-		(_match() == 'n') &&
-		(_lookahead() == 't') &&
-		(_match() == 't') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("fimenquanto ");
-			_escrever(SAIDA, "fimenquanto ");
-			printf("\n");
-			_escrever(SAIDA, "\n");
-		}
-		return true;
+q12:
+	if (codigo[i] == 'i') {
+		goto q13;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,fimenquanto ");
-			_escrever(SAIDA, "ERRO LEXICO,fimenquanto ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'se '
-bool se(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 's') &&
-		(_match() == 's') &&
-		(_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("se ");
-			_escrever(SAIDA, "se ");
-		}
-		return true;
+q13:
+	if (codigo[i] == 'm') {
+		goto q14;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,se ");
-			_escrever(SAIDA, "ERRO LEXICO,se ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'fimse '
-bool fimse(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'f') &&
-		(_match() == 'f') &&
-		(_lookahead() == 'i') &&
-		(_match() == 'i') &&
-		(_lookahead() == 'm') &&
-		(_match() == 'm') &&
-		(_lookahead() == 's') &&
-		(_match() == 's') &&
-		(_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("fimse ");
-			_escrever(SAIDA, "fimse ");
-			printf("\n");
-			_escrever(SAIDA, "\n");
-		}
-		return true;
+q14:
+	if (codigo[i] == 'e') {
+		goto q15;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,fimse ");
-			_escrever(SAIDA, "ERRO LEXICO,fimse ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'senao '
-bool senao(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 's') &&
-		(_match() == 's') &&
-		(_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 'n') &&
-		(_match() == 'n') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("senao ");
-			_escrever(SAIDA, "senao ");
-			printf("\n");
-			_escrever(SAIDA, "\n");
-		}
-		return true;
+q15:
+	if (codigo[i] == 'n') {
+		goto q16;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,senao ");
-			_escrever(SAIDA, "ERRO LEXICO,senao ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'entao '
-bool entao(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'e') &&
-		(_match() == 'e') &&
-		(_lookahead() == 'n') &&
-		(_match() == 'n') &&
-		(_lookahead() == 't') &&
-		(_match() == 't') &&
-		(_lookahead() == 'a') &&
-		(_match() == 'a') &&
-		(_lookahead() == 'o') &&
-		(_match() == 'o') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("entao ");
-			_escrever(SAIDA, "entao ");
-			printf("\n");
-			_escrever(SAIDA, "\n");
-		}
-		return true;
+q16:
+	if (codigo[i] == 't') {
+		goto q17;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,entao ");
-			_escrever(SAIDA, "ERRO LEXICO,entao ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a ', '
-bool virgula(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == ',') &&
-		(_match() == ',') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf(", ");
-			_escrever(SAIDA, ", ");
-		}
-		return true;
+q17:
+	if (codigo[i] == 'o') {
+		goto q18;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,, ");
-			_escrever(SAIDA, "ERRO LEXICO,, ");
-		}
-		return false;
+		goto q117;
 	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '; '
-bool ponto_e_virgula(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == ';') &&
-		(_match() == ';') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("; ");
-			_escrever(SAIDA, "; ");
-			printf("\n");
-			_escrever(SAIDA, "\n");
-		}
-		return true;
+q18:
+	if (codigo[i] == ' ') {
+		_escrever(output, 'procedimento\n');
+		goto q0;
 	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,; ");
-			_escrever(SAIDA, "ERRO LEXICO,; ");
-		}
-		return false;
+		_escrever(output, '<ERRO LEXICO>\n');
 	}
-}
 
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a ': '
-bool dois_pontos(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == ':') &&
-		(_match() == ':') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf(": ");
-			_escrever(SAIDA, ": ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,: ");
-			_escrever(SAIDA, "ERRO LEXICO,: ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '( '
-bool parenteses_esquerda(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == '(') &&
-		(_match() == '(') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("( ");
-			_escrever(SAIDA, "( ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,( ");
-			_escrever(SAIDA, "ERRO LEXICO,( ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a ') '
-bool parenteses_direita(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == ')') &&
-		(_match() == ')') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf(") ");
-			_escrever(SAIDA, ") ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,) ");
-			_escrever(SAIDA, "ERRO LEXICO,) ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'div '
-bool operador_div(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'd') &&
-		(_match() == 'd') &&
-		(_lookahead() == 'i') &&
-		(_match() == 'i') &&
-		(_lookahead() == 'v') &&
-		(_match() == 'v') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("div ");
-			_escrever(SAIDA, "div ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,div ");
-			_escrever(SAIDA, "ERRO LEXICO,div ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'mul '
-bool operador_mul(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == 'm') &&
-		(_match() == 'm') &&
-		(_lookahead() == 'u') &&
-		(_match() == 'u') &&
-		(_lookahead() == 'l') &&
-		(_match() == 'l') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("mul ");
-			_escrever(SAIDA, "mul ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,mul ");
-			_escrever(SAIDA, "ERRO LEXICO,mul ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '+ '
-bool operador_mais(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == '+') &&
-		(_match() == '+') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("+ ");
-			_escrever(SAIDA, "+ ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,+ ");
-			_escrever(SAIDA, "ERRO LEXICO,+ ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '- '
-bool operador_menos(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == '-') &&
-		(_match() == '-') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("- ");
-			_escrever(SAIDA, "- ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,- ");
-			_escrever(SAIDA, "ERRO LEXICO,- ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '= '
-bool operador_igual(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == '=') &&
-		(_match() == '=') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("= ");
-			_escrever(SAIDA, "= ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,= ");
-			_escrever(SAIDA, "ERRO LEXICO,= ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '< '
-bool relacao_menor(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == '<') &&
-		(_match() == '<') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("< ");
-			_escrever(SAIDA, "< ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,< ");
-			_escrever(SAIDA, "ERRO LEXICO,< ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '> '
-bool relacao_maior(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == '>') &&
-		(_match() == '>') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("> ");
-			_escrever(SAIDA, "> ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,> ");
-			_escrever(SAIDA, "ERRO LEXICO,> ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '== '
-bool relacao_igual(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == '=') &&
-		(_match() == '=') &&
-		(_lookahead() == '=') &&
-		(_match() == '=') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("== ");
-			_escrever(SAIDA, "== ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,== ");
-			_escrever(SAIDA, "ERRO LEXICO,== ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '<> '
-bool relacao_diferente(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == '<') &&
-		(_match() == '<') &&
-		(_lookahead() == '>') &&
-		(_match() == '>') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("<> ");
-			_escrever(SAIDA, "<> ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,<> ");
-			_escrever(SAIDA, "ERRO LEXICO,<> ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '<= '
-bool relacao_menor_igual(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == '<') &&
-		(_match() == '<') &&
-		(_lookahead() == '=') &&
-		(_match() == '=') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf("<= ");
-			_escrever(SAIDA, "<= ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,<= ");
-			_escrever(SAIDA, "ERRO LEXICO,<= ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a '>= '
-bool relacao_maior_igual(bool write, bool error){
-	int j = i;
-	if ((_lookahead() == '>') &&
-		(_match() == '>') &&
-		(_lookahead() == '=') &&
-		(_match() == '=') &&
-		(_lookahead() == ' ') &&
-		(_match() == ' ')) {
-		if (write) {
-   			printf(">= ");
-			_escrever(SAIDA, ">= ");
-		}
-		return true;
-	} else {
-		i = j;
-		if (error) {
-   			printf("ERRO LEXICO,>= ");
-			_escrever(SAIDA, "ERRO LEXICO,>= ");
-		}
-		return false;
-	}
-}
-
-// Funcao que verifica se a proxima sequencia lexica existente tem valor igual a 'qualquer uma das palavras reservadas
-bool palavra_reservada(bool write, bool error) {
-	int j = i;
-	if (palavra_programa(write,error) ||
-		fimprograma(write,error) ||
-		procedimento(write,error) ||
-		fimprocedimento(write,error) ||
-		enquanto(write,error) ||
-		fimenquanto(write,error) ||
-		se(write,error) ||
-		fimse(write,error) ||
-		inteiro(write,error) ||
-		booleano(write,error) ||
-		entao(write,error) ||
-		senao(write,error) ||
-		escreva(write,error) ||
-		verdadeiro(write,error) ||
-		falso(write,error) ||
-		faca(write,error)) {
-			i = j;
-			return true;
-		}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
