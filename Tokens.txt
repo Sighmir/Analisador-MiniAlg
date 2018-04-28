@@ -1,160 +1,131 @@
-programa <identificador,correto> 
-<tipo,inteiro> : <identificador,a> , <identificador,b> , <identificador,c> ; 
-<tipo,booleano> : <identificador,d> , <identificador,e> , <identificador,f> ; 
-procedimento <identificador,proc> ( <tipo,inteiro> : <identificador,al> ) 
-<tipo,inteiro> : <identificador,a> , <identificador,b> , <identificador,c> ; 
-<tipo,booleano> : <identificador,d> , <identificador,e> , <identificador,f> ; 
-<identificador,a> = <numero,1> ; 
-se ( <identificador,a> <relacao,sm> <numero,1> ) entao 
-<identificador,a> = <numero,12> ; 
+programa 
+correto 
+inteiro 
+: 
+a 
+, 
+b  
+, 
+c 
+; 
+booleano 
+: 
+d  
+, 
+e  
+, 
+f  
+; 
+procedimento 
+proc  
+( 
+inteiro 
+: 
+al 
+) 
+inteiro 
+: 
+a 
+, 
+b  
+, 
+c 
+; 
+booleano 
+: 
+d  
+, 
+e  
+, 
+f  
+; 
+a 
+= 
+1 ; 
+se 
+( 
+a 
+< 
+1 ) 
+entao 
+a 
+= 
+12 ; 
 fimse 
 fimprocedimento 
-<identificador,a> = <numero,2> ; 
-<identificador,b> = <numero,10> ; 
-<identificador,c> = <numero,11> ; 
-<identificador,a> = <identificador,b> + <identificador,c> ; 
-<identificador,d> = <bool,verdadeiro> ; 
-<identificador,e> = <bool,falso> ; 
-<identificador,f> = <bool,verdadeiro> ; 
-escreva ( <identificador,b> ) ; 
-se ( <identificador,d> ) entao 
-<identificador,a> = <numero,20> ; 
-<identificador,b> = <numero,10> mul <identificador,c> ; 
-<identificador,c> = <identificador,a> div <identificador,b> ; 
+a 
+= 
+2 ; 
+b  
+= 
+10 ; 
+c 
+= 
+11 ; 
+a 
+= 
+b  
++ 
+c 
+; 
+d  
+= 
+verdadeiro 
+; 
+e  
+= 
+falso 
+; 
+f  
+= 
+verdadeiro 
+; 
+escreva 
+( 
+b  
+) 
+; 
+se 
+( 
+d  
+) 
+entao 
+a 
+= 
+20 ; 
+b  
+= 
+10 mul 
+c 
+; 
+c 
+= 
+a 
+div 
+b  
+; 
 fimse 
-enquanto ( <identificador,a> <relacao,bg> <numero,1> ) faca 
-se ( <identificador,b> <relacao,bg> <numero,10> ) entao 
-<identificador,b> = <numero,2> ; 
+enquanto 
+( 
+a 
+> 
+1 ) 
+faca 
+se 
+( 
+b  
+> 
+10 ) 
+entao 
+b  
+= 
+2 ; 
 senao 
-<identificador,a> = <identificador,a> - <numero,1> ; 
-fimse 
-fimenquanto 
-fimprograma 
-programa <identificador,correto> 
-<tipo,inteiro> : <identificador,a> , <identificador,b> , <identificador,c> ; 
-<tipo,booleano> : <identificador,d> , <identificador,e> , <identificador,f> ; 
-procedimento <identificador,proc> ( <tipo,inteiro> : <identificador,al> ) 
-<tipo,inteiro> : <identificador,a> , <identificador,b> , <identificador,c> ; 
-<tipo,booleano> : <identificador,d> , <identificador,e> , <identificador,f> ; 
-<identificador,a> = <numero,1> ; 
-se ( <identificador,a> <relacao,sm> <numero,1> ) entao 
-<identificador,a> = <numero,12> ; 
-fimse 
-fimprocedimento 
-<identificador,a> = <numero,2> ; 
-<identificador,b> = <numero,10> ; 
-<identificador,c> = <numero,11> ; 
-<identificador,a> = <identificador,b> + <identificador,c> ; 
-<identificador,d> = <bool,verdadeiro> ; 
-<identificador,e> = <bool,falso> ; 
-<identificador,f> = <bool,verdadeiro> ; 
-escreva ( <identificador,b> ) ; 
-se ( <identificador,d> ) entao 
-<identificador,a> = <numero,20> ; 
-<identificador,b> = <numero,10> mul <identificador,c> ; 
-<identificador,c> = <identificador,a> div <identificador,b> ; 
-fimse 
-enquanto ( <identificador,a> <relacao,bg> <numero,1> ) faca 
-se ( <identificador,b> <relacao,bg> <numero,10> ) entao 
-<identificador,b> = <numero,2> ; 
-senao 
-<identificador,a> = <identificador,a> - <numero,1> ; 
-fimse 
-fimenquanto 
-fimprograma 
-programa <identificador,correto> 
-<tipo,inteiro> : <identificador,a> , <identificador,b> , <identificador,c> ; 
-<tipo,booleano> : <identificador,d> , <identificador,e> , <identificador,f> ; 
-procedimento <identificador,proc> ( <tipo,inteiro> : <identificador,al> ) 
-<tipo,inteiro> : <identificador,a> , <identificador,b> , <identificador,c> ; 
-<tipo,booleano> : <identificador,d> , <identificador,e> , <identificador,f> ; 
-<identificador,a> = <numero,1> ; 
-se ( <identificador,a> <relacao,sm> <numero,1> ) entao 
-<identificador,a> = <numero,12> ; 
-fimse 
-fimprocedimento 
-<identificador,a> = <numero,2> ; 
-<identificador,b> = <numero,10> ; 
-<identificador,c> = <numero,11> ; 
-<identificador,a> = <identificador,b> + <identificador,c> ; 
-<identificador,d> = <bool,verdadeiro> ; 
-<identificador,e> = <bool,falso> ; 
-<identificador,f> = <bool,verdadeiro> ; 
-escreva ( <identificador,b> ) ; 
-se ( <identificador,d> ) entao 
-<identificador,a> = <numero,20> ; 
-<identificador,b> = <numero,10> mul <identificador,c> ; 
-<identificador,c> = <identificador,a> div <identificador,b> ; 
-fimse 
-enquanto ( <identificador,a> <relacao,bg> <numero,1> ) faca 
-se ( <identificador,b> <relacao,bg> <numero,10> ) entao 
-<identificador,b> = <numero,2> ; 
-senao 
-<identificador,a> = <identificador,a> - <numero,1> ; 
-fimse 
-fimenquanto 
-fimprograma 
-programa <identificador,correto> 
-<tipo,inteiro> : <identificador,a> , <identificador,b> , <identificador,c> ; 
-<tipo,booleano> : <identificador,d> , <identificador,e> , <identificador,f> ; 
-procedimento <identificador,proc> ( <tipo,inteiro> : <identificador,al> ) 
-<tipo,inteiro> : <identificador,a> , <identificador,b> , <identificador,c> ; 
-<tipo,booleano> : <identificador,d> , <identificador,e> , <identificador,f> ; 
-<identificador,a> = <numero,1> ; 
-se ( <identificador,a> <relacao,sm> <numero,1> ) entao 
-<identificador,a> = <numero,12> ; 
-fimse 
-fimprocedimento 
-<identificador,a> = <numero,2> ; 
-<identificador,b> = <numero,10> ; 
-<identificador,c> = <numero,11> ; 
-<identificador,a> = <identificador,b> + <identificador,c> ; 
-<identificador,d> = <bool,verdadeiro> ; 
-<identificador,e> = <bool,falso> ; 
-<identificador,f> = <bool,verdadeiro> ; 
-escreva ( <identificador,b> ) ; 
-se ( <identificador,d> ) entao 
-<identificador,a> = <numero,20> ; 
-<identificador,b> = <numero,10> mul <identificador,c> ; 
-<identificador,c> = <identificador,a> div <identificador,b> ; 
-fimse 
-enquanto ( <identificador,a> <relacao,bg> <numero,1> ) faca 
-se ( <identificador,b> <relacao,bg> <numero,10> ) entao 
-<identificador,b> = <numero,2> ; 
-senao 
-<identificador,a> = <identificador,a> - <numero,1> ; 
-fimse 
-fimenquanto 
-fimprograma 
-<ERRO SINTATICO,programa> programa <identificador,correto> 
-<tipo,inteiro> : <identificador,a> , <identificador,b> , <identificador,c> ; 
-<tipo,booleano> : <identificador,d> , <identificador,e> , <identificador,f> ; 
-procedimento <identificador,proc> ( <tipo,inteiro> : <identificador,al> ) 
-<tipo,inteiro> : <identificador,a> , <identificador,b> , <identificador,c> ; 
-<tipo,booleano> : <identificador,d> , <identificador,e> , <identificador,f> ; 
-<identificador,a> = <numero,1> ; 
-se ( <identificador,a> <relacao,sm> <numero,1> ) entao 
-<identificador,a> = <numero,12> ; 
-fimse 
-fimprocedimento 
-<identificador,a> = <numero,2> ; 
-<identificador,b> = <numero,10> ; 
-<identificador,c> = <numero,11> ; 
-<identificador,a> = <identificador,b> + <identificador,c> ; 
-<identificador,d> = <bool,verdadeiro> ; 
-<identificador,e> = <bool,falso> ; 
-<identificador,f> = <bool,verdadeiro> ; 
-escreva ( <identificador,b> ) ; 
-se ( <identificador,d> ) entao 
-<identificador,a> = <numero,20> ; 
-<identificador,b> = <numero,10> mul <identificador,c> ; 
-<identificador,c> = <identificador,a> div <identificador,b> ; 
-fimse 
-enquanto ( <identificador,a> <relacao,bg> <numero,1> ) faca 
-se ( <identificador,b> <relacao,bg> <numero,10> ) entao 
-<identificador,b> = <numero,2> ; 
-senao 
-<identificador,a> = <identificador,a> - <numero,1> ; 
+a 
+= 
+a 
+- 
+1 ; 
 fimse 
 fimenquanto 
 fimprograma 

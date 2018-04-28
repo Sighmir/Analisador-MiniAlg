@@ -131,77 +131,95 @@ bool _matchAny(char * check){
 // Funcao do analisador lexico
 int analisadorLexico(char *input, char *output){
 	char *codigo = _ler(input);
-	char *palavra = malloc(256);
+	char *palavra = malloc(255);
 	printf("PROGRAMA LIDO (Espacos extras, tabs e enters sao ignorados):\n\n%s\n\n\n", codigo);
 	printf("GERANDO TOKENS:\n\n");
-	int i = -1;
+	int i = 0;
 	int j = 0;
 q0:
-	i++;
+	j = 0;
 	memset(palavra, 0, 255);
 	palavra[j++] = codigo[i];
 	if (codigo[i] == ';') {
+		i++;
 		goto q129;
 	} else if (codigo[i] == ':') {
+		i++;
 		goto q129;
 	} else if (codigo[i] == ',') {
+		i++;
 		goto q129;
 	} else if (codigo[i] == '(') {
+		i++;
 		goto q129;
 	} else if (codigo[i] == ')') {
+		i++;
 		goto q129;
 	} else if (codigo[i] == '<') {
+		i++;
 		goto q133;
 	} else if (codigo[i] == '>') {
+		i++;
 		goto q134;
 	} else if (codigo[i] == '=') {
+		i++;
 		goto q135;
 	} else if (codigo[i] == 'v') {
+		i++;
 		goto q106;
 	} else if (codigo[i] == 'b') {
+		i++;
 		goto q97;
 	} else if (codigo[i] == 'i') {
+		i++;
 		goto q89;
 	} else if (codigo[i] == 's') {
+		i++;
 		goto q82;
 	} else if (codigo[i] == 'p') {
+		i++;
 		goto q1;
 	} else if (codigo[i] == 'f') {
+		i++;
 		goto q20;
 	} else if (codigo[i] == 'e') {
+		i++;
 		goto q62;
 	} else if (codigo[i] == 'd') {
+		i++;
 		goto q121;
 	} else if (codigo[i] == 'm') {
+		i++;
 		goto q125;
 	} else if (
 		codigo[i] == 'a' || codigo[i] == 'A' ||
-		/* codigo[i] == 'b' */ || codigo[i] == 'B' ||
+		/* codigo[i] == 'b' || */ codigo[i] == 'B' ||
 		codigo[i] == 'c' || codigo[i] == 'C' ||
-		/* codigo[i] == 'd' */ || codigo[i] == 'D' ||
+		/* codigo[i] == 'd' || */ codigo[i] == 'D' ||
 		codigo[i] == 'e' || codigo[i] == 'E' ||
-		/* codigo[i] == 'f' */ || codigo[i] == 'F' ||
+		/* codigo[i] == 'f' || */ codigo[i] == 'F' ||
 		codigo[i] == 'g' || codigo[i] == 'G' ||
 		codigo[i] == 'h' || codigo[i] == 'H' ||
-		/* codigo[i] == 'i' */ || codigo[i] == 'I' ||
+		/* codigo[i] == 'i' || */ codigo[i] == 'I' ||
 		codigo[i] == 'j' || codigo[i] == 'J' ||
 		codigo[i] == 'k' || codigo[i] == 'K' ||
 		codigo[i] == 'l' || codigo[i] == 'L' ||
-		/* codigo[i] == 'm' */ || codigo[i] == 'M' ||
+		/* codigo[i] == 'm' || */ codigo[i] == 'M' ||
 		codigo[i] == 'n' || codigo[i] == 'N' ||
 		codigo[i] == 'o' || codigo[i] == 'O' ||
-		/* codigo[i] == 'p' */ || codigo[i] == 'P' ||
+		/* codigo[i] == 'p' || */ codigo[i] == 'P' ||
 		codigo[i] == 'q' || codigo[i] == 'Q' ||
 		codigo[i] == 'r' || codigo[i] == 'R' ||
-		/* codigo[i] == 's' */ || codigo[i] == 'S' ||
+		/* codigo[i] == 's' || */ codigo[i] == 'S' ||
 		codigo[i] == 't' || codigo[i] == 'T' ||
 		codigo[i] == 'u' || codigo[i] == 'U' ||
-		/* codigo[i] == 'v' */ || codigo[i] == 'V' ||
+		/* codigo[i] == 'v' || */ codigo[i] == 'V' ||
 		codigo[i] == 'w' || codigo[i] == 'W' ||
 		codigo[i] == 'x' || codigo[i] == 'X' ||
 		codigo[i] == 'y' || codigo[i] == 'Y' ||
 		codigo[i] == 'z' || codigo[i] == 'Z'
 	) {
+		i++;
 		goto q117;
 	} else if (
 		codigo[i] == '0' ||
@@ -215,383 +233,410 @@ q0:
 		codigo[i] == '8' ||
 		codigo[i] == '9'
 	) {
+		i++;
 		goto q119;
 	} else if (codigo[i] == '+') {
+		i++;
 		goto q129;
 	} else if (codigo[i] == '-') {
+		i++;
 		goto q129;
 	} else if (codigo[i] == '/') {
+		i++;
 		goto q157;
 	} else if (codigo[i] == '*') {
+		i++;
 		goto q158;
+	} else if (i == strlen(codigo)) {
+		return 0;
 	} else {
 		printf("<ERRO LEXICO>\n");
 		_escrever(output, "<ERRO LEXICO>\n");
 		return -1;
 	}
 q1:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'r') {
+		i++;
 		goto q2;
 	} else {
 		goto q117;
 	}
 q2:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
+		i++;
 		goto q3;
 	} else {
 		goto q117;
 	}
 q3:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'g') {
+		i++;
 		goto q4;
 	} else if (codigo[i] == 'c') {
+		i++;
 		goto q10;
 	} else {
 		goto q117;
 	}
 q4:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'r') {
+		i++;
 		goto q5;
 	} else {
 		goto q117;
 	}
 q5:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
+		i++;
 		goto q6;
 	} else {
 		goto q117;
 	}
 q6:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'm') {
+		i++;
 		goto q7;
 	} else {
 		goto q117;
 	}
 q7:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 q9:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == ' ') {
 		sprintf(palavra, "%s\n", palavra);
 		printf("%s",palavra);
 		_escrever(output, palavra);
+		i++;
 		goto q0;
 	} else {
 		goto q117;
 	}
 q10:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'e') {
+		i++;
 		goto q11;
 	} else {
 		goto q117;
 	}
 q11:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'd') {
+		i++;
 		goto q12;
 	} else {
 		goto q117;
 	}
 q12:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'i') {
+		i++;
 		goto q13;
 	} else {
 		goto q117;
 	}
 q13:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'm') {
+		i++;
 		goto q14;
 	} else {
 		goto q117;
 	}
 q14:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'e') {
+		i++;
 		goto q15;
 	} else {
 		goto q117;
 	}
 q15:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'n') {
+		i++;
 		goto q16;
 	} else {
 		goto q117;
 	}
 q16:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 't') {
+		i++;
 		goto q17;
 	} else {
 		goto q117;
 	}
 q17:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 q82:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'e') {
-		goto q9;
+		i++;
+		goto q83;
+	} else {
+		goto q117;
+	}
+q83:
+	palavra[j++] = codigo[i];
+	if (codigo[i] == ' ') {
+		sprintf(palavra, "%s\n", palavra);
+		printf("%s",palavra);
+		_escrever(output, palavra);
+		i++;
+		goto q0;
+	} else if (codigo[i] == 'n') {
+		i++;
+		goto q85;
 	} else {
 		goto q117;
 	}
 q85:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
+		i++;
 		goto q86;
 	} else {
 		goto q117;
 	}
 q86:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 q20:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
+		i++;
 		goto q54;
 	} else if (codigo[i] == 'i') {
+		i++;
 		goto q21;
 	} else {
 		goto q117;
 	}
 q54:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'c') {
+		i++;
 		goto q55;
 	} else if (codigo[i] == 'l') {
+		i++;
 		goto q58;
 	} else {
 		goto q117;
 	}
 q55:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 q58:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 's') {
+		i++;
 		goto q59;
 	} else {
 		goto q117;
 	}
 q59:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 q21:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'm') {
+		i++;
 		goto q22;
 	} else {
 		goto q117;
 	}
 q22:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'p') {
+		i++;
 		goto q1;
 	} else if (codigo[i] == 's') {
+		i++;
 		goto q51;
 	} else if (codigo[i] == 'e') {
+		i++;
 		goto q42;
 	} else {
 		goto q117;
 	}
 q51:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'e') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 q42:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'n') {
+		i++;
 		goto q43;
 	} else {
 		goto q117;
 	}
 q43:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'q') {
+		i++;
 		goto q44;
 	} else {
 		goto q117;
 	}
 q44:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'u') {
+		i++;
 		goto q45;
 	} else {
 		goto q117;
 	}
 q45:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
+		i++;
 		goto q46;
 	} else {
 		goto q117;
 	}
 q46:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'n') {
+		i++;
 		goto q47;
 	} else {
 		goto q117;
 	}
 q47:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 't') {
+		i++;
 		goto q48;
 	} else {
 		goto q117;
 	}
 q48:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 q62:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 's') {
+		i++;
 		goto q71;
 	} else if (codigo[i] == 'n') {
+		i++;
 		goto q63;
 	} else {
 		goto q117;
 	}
 q71:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'c') {
+		i++;
 		goto q72;
 	} else {
 		goto q117;
 	}
 q72:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'r') {
+		i++;
 		goto q73;
 	} else {
 		goto q117;
 	}
 q73:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'e') {
+		i++;
 		goto q74;
 	} else {
 		goto q117;
 	}
 q74:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'v') {
+		i++;
 		goto q75;
 	} else {
 		goto q117;
 	}
 q75:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 q63:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'q') {
+		i++;
 		goto q44;
 	} else if (codigo[i] == 't') {
+		i++;
 		goto q78;
 	} else {
 		goto q117;
 	}
 q78:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
+		i++;
 		goto q79;
 	} else {
 		goto q117;
 	}
 q79:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 q119:
-	i++;
 	palavra[j++] = codigo[i];
 	if (
 		codigo[i] == '0' ||
@@ -605,11 +650,13 @@ q119:
 		codigo[i] == '8' ||
 		codigo[i] == '9'
 	) {
+		i++;
 		goto q119;
 	} else if (codigo[i] == ' ') {
-		sprintf(palavra, "<numero,%s>\n", palavra);
-		printf("%s",palavra);
+		//sprintf(palavra, "<numero,%s>\n", palavra);
+		printf("%s\n",palavra);
 		_escrever(output, palavra);
+		i++;
 		goto q0;
 	} else {
 		printf("<ERRO LEXICO>\n");
@@ -617,41 +664,41 @@ q119:
 		return -1;
 	}
 q121:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'i') {
+		i++;
 		goto q122;
 	} else {
 		goto q117;
 	}
 q122:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'v') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 q125:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'u') {
+		i++;
 		goto q126;
 	} else {
 		goto q117;
 	}
 q126:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'l') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 q129:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == ' ') {
+		i++;
 		sprintf(palavra, "%s\n", palavra);
 		printf("%s",palavra);
 		_escrever(output, palavra);
@@ -662,9 +709,9 @@ q129:
 		return -1;
 	}
 q157:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == '*') {
+		i++;
 		goto q129;
 	} else {
 		printf("<ERRO LEXICO>\n");
@@ -672,9 +719,9 @@ q157:
 		return -1;
 	}
 q158:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == '/') {
+		i++;
 		goto q129;
 	} else {
 		printf("<ERRO LEXICO>\n");
@@ -682,184 +729,183 @@ q158:
 		return -1;
 	}
 q89:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'n') {
+		i++;
 		goto q90;
 	} else {
 		goto q117;
 	}
 q90:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 't') {
+		i++;
 		goto q91;
 	} else {
 		goto q117;
 	}
 q91:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'e') {
+		i++;
 		goto q92;
 	} else {
 		goto q117;
 	}
 q92:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'i') {
+		i++;
 		goto q93;
 	} else {
 		goto q117;
 	}
 q93:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'r') {
+		i++;
 		goto q94;
 	} else {
 		goto q117;
 	}
 q94:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 q97:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
+		i++;
 		goto q98;
 	} else {
 		goto q117;
 	}
 q98:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
+		i++;
 		goto q99;
 	} else {
 		goto q117;
 	}
 q99:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'l') {
+		i++;
 		goto q100;
 	} else {
 		goto q117;
 	}
 q100:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'e') {
+		i++;
 		goto q101;
 	} else {
 		goto q117;
 	}
 q101:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
+		i++;
 		goto q102;
 	} else {
 		goto q117;
 	}
 q102:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'n') {
+		i++;
 		goto q103;
 	} else {
 		goto q117;
 	}
 q103:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 q106:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'e') {
+		i++;
 		goto q107;
 	} else {
 		goto q117;
 	}
 q107:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'r') {
+		i++;
 		goto q108;
 	} else {
 		goto q117;
 	}
 q108:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'd') {
+		i++;
 		goto q109;
 	} else {
 		goto q117;
 	}
 q109:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
+		i++;
 		goto q110;
 	} else {
 		goto q117;
 	}
 q110:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'd') {
+		i++;
 		goto q111;
 	} else {
 		goto q117;
 	}
 q111:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'e') {
+		i++;
 		goto q112;
 	} else {
 		goto q117;
 	}
 q112:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'i') {
+		i++;
 		goto q113;
 	} else {
 		goto q117;
 	}
 q113:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'r') {
+		i++;
 		goto q114;
 	} else {
 		goto q117;
 	}
 q114:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
+		i++;
 		goto q9;
 	} else {
 		goto q117;
 	}
 	
 q117:
-	i++;
 	palavra[j++] = codigo[i];
 	if (
 		codigo[i] == 'a' || codigo[i] == 'A' ||
@@ -889,11 +935,13 @@ q117:
 		codigo[i] == 'y' || codigo[i] == 'Y' ||
 		codigo[i] == 'z' || codigo[i] == 'Z'
 	) {
+		i++;
 		goto q117;
 	} else if (codigo[i] == ' ') {
-		sprintf(palavra, "<identificador,%s>\n", palavra);
+		sprintf(palavra, "%s\n", palavra);
 		printf("%s",palavra);
 		_escrever(output, palavra);
+		i++;
 		goto q0;
 	} else {
 		printf("<ERRO LEXICO>\n");
@@ -901,16 +949,18 @@ q117:
 		return -1;
 	}
 q133:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == '=') {
+		i++;
 		goto q129;
 	} else if (codigo[i] == '>') {
+		i++;
 		goto q129;
 	} else if (codigo[i] == ' ') {
 		sprintf(palavra, "%s\n", palavra);
 		printf("%s",palavra);
 		_escrever(output, palavra);
+		i++;
 		goto q0;
 	} else {
 		printf("<ERRO LEXICO>\n");
@@ -918,14 +968,15 @@ q133:
 		return -1;
 	}
 q134:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == '=') {
+		i++;
 		goto q129;
 	} else if (codigo[i] == ' ') {
 		sprintf(palavra, "%s\n", palavra);
 		printf("%s",palavra);
 		_escrever(output, palavra);
+		i++;
 		goto q0;
 	} else {
 		printf("<ERRO LEXICO>\n");
@@ -933,14 +984,15 @@ q134:
 		return -1;
 	}
 q135:
-	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == '=') {
+		i++;
 		goto q129;
 	} else if (codigo[i] == ' ') {
 		sprintf(palavra, "%s\n", palavra);
 		printf("%s",palavra);
 		_escrever(output, palavra);
+		i++;
 		goto q0;
 	} else {
 		printf("<ERRO LEXICO>\n");
@@ -1675,7 +1727,7 @@ void alunosResponsaveis(){
 
 // Funcao main que chama a funcao programa para inicializar a analise lexica e sintetica.
 int main(){
-	analisadorLexico('MiniAlg.txt', 'Tokens.txt');
+	analisadorLexico("MiniAlg.txt", "Tokens.txt");
 	alunosResponsaveis();
 	return 0;
 }
