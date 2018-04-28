@@ -75,7 +75,7 @@ char * _ler(char * nome) {
 
     if (arquivo == NULL) return NULL;
     fseek(arquivo, 0, SEEK_END);
-    tam = ftell(arquivo);
+    int tam = ftell(arquivo);
     fseek(arquivo, 0, SEEK_SET);
     codigo = malloc(tam);
 
@@ -102,7 +102,7 @@ void _escrever(char * nome, char *texto) {
     fclose(arquivo);
 }
 
-// Funcao que retorna o valor do proximo simbolo lexico sem consumi-lo.
+/*/ Funcao que retorna o valor do proximo simbolo lexico sem consumi-lo.
 char _lookahead(){
 	return codigo[i+1];
 }
@@ -122,16 +122,16 @@ bool _matchAny(char * check){
 	}
 	return false;
 }
-
+*/
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// ANALISADOR LEXICO //////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Funcao do analisador lexico
-void analisadorLexico(char *input, char *output){
+int analisadorLexico(char *input, char *output){
 	char *codigo = _ler(input);
-	char *palavra = malloc(256)
+	char *palavra = malloc(256);
 	printf("PROGRAMA LIDO (Espacos extras, tabs e enters sao ignorados):\n\n%s\n\n\n", codigo);
 	printf("GERANDO TOKENS:\n\n");
 	int i = -1;
@@ -176,27 +176,27 @@ q0:
 		goto q125;
 	} else if (
 		codigo[i] == 'a' || codigo[i] == 'A' ||
-		codigo[i] == 'b' || codigo[i] == 'B' ||
+		/* codigo[i] == 'b' */ || codigo[i] == 'B' ||
 		codigo[i] == 'c' || codigo[i] == 'C' ||
-		codigo[i] == 'd' || codigo[i] == 'D' ||
+		/* codigo[i] == 'd' */ || codigo[i] == 'D' ||
 		codigo[i] == 'e' || codigo[i] == 'E' ||
-		codigo[i] == 'f' || codigo[i] == 'F' ||
+		/* codigo[i] == 'f' */ || codigo[i] == 'F' ||
 		codigo[i] == 'g' || codigo[i] == 'G' ||
 		codigo[i] == 'h' || codigo[i] == 'H' ||
-		codigo[i] == 'i' || codigo[i] == 'I' ||
+		/* codigo[i] == 'i' */ || codigo[i] == 'I' ||
 		codigo[i] == 'j' || codigo[i] == 'J' ||
 		codigo[i] == 'k' || codigo[i] == 'K' ||
 		codigo[i] == 'l' || codigo[i] == 'L' ||
-		codigo[i] == 'm' || codigo[i] == 'M' ||
+		/* codigo[i] == 'm' */ || codigo[i] == 'M' ||
 		codigo[i] == 'n' || codigo[i] == 'N' ||
 		codigo[i] == 'o' || codigo[i] == 'O' ||
-		codigo[i] == 'p' || codigo[i] == 'P' ||
+		/* codigo[i] == 'p' */ || codigo[i] == 'P' ||
 		codigo[i] == 'q' || codigo[i] == 'Q' ||
 		codigo[i] == 'r' || codigo[i] == 'R' ||
-		codigo[i] == 's' || codigo[i] == 'S' ||
+		/* codigo[i] == 's' */ || codigo[i] == 'S' ||
 		codigo[i] == 't' || codigo[i] == 'T' ||
 		codigo[i] == 'u' || codigo[i] == 'U' ||
-		codigo[i] == 'v' || codigo[i] == 'V' ||
+		/* codigo[i] == 'v' */ || codigo[i] == 'V' ||
 		codigo[i] == 'w' || codigo[i] == 'W' ||
 		codigo[i] == 'x' || codigo[i] == 'X' ||
 		codigo[i] == 'y' || codigo[i] == 'Y' ||
@@ -219,15 +219,15 @@ q0:
 	} else if (codigo[i] == '+') {
 		goto q129;
 	} else if (codigo[i] == '-') {
-		goto q130;
+		goto q129;
 	} else if (codigo[i] == '/') {
 		goto q157;
 	} else if (codigo[i] == '*') {
 		goto q158;
-	else {
+	} else {
 		printf("<ERRO LEXICO>\n");
 		_escrever(output, "<ERRO LEXICO>\n");
-		return
+		return -1;
 	}
 q1:
 	i++;
@@ -283,16 +283,17 @@ q7:
 	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'a') {
-		goto q8;
+		goto q9;
 	} else {
 		goto q117;
 	}
-q8:
+q9:
 	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == ' ') {
-		printf("programa\n");
-		_escrever(output, 'programa\n');
+		sprintf(palavra, "%s\n", palavra);
+		printf("%s",palavra);
+		_escrever(output, palavra);
 		goto q0;
 	} else {
 		goto q117;
@@ -357,17 +358,7 @@ q17:
 	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
-		goto q18;
-	} else {
-		goto q117;
-	}
-q18:
-	i++;
-	palavra[j++] = codigo[i];
-	if (codigo[i] == ' ') {
-		printf("procedimento\n");
-		_escrever(output, 'procedimento\n');
-		goto q0;
+		goto q9;
 	} else {
 		goto q117;
 	}
@@ -375,19 +366,7 @@ q82:
 	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'e') {
-		goto q83;
-	} else {
-		goto q117;
-	}
-q83:
-	i++;
-	palavra[j++] = codigo[i];
-	if (codigo[i] == ' ') {
-		printf("se\n");
-		_escrever(output, 'se\n');
-		goto q0;
-	} else if (codigo[i] == 'n') {
-		goto q85;
+		goto q9;
 	} else {
 		goto q117;
 	}
@@ -403,26 +382,311 @@ q86:
 	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
-		goto q86;
+		goto q9;
 	} else {
 		goto q117;
 	}
-q87:
+q20:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'a') {
+		goto q54;
+	} else if (codigo[i] == 'i') {
+		goto q21;
+	} else {
+		goto q117;
+	}
+q54:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'c') {
+		goto q55;
+	} else if (codigo[i] == 'l') {
+		goto q58;
+	} else {
+		goto q117;
+	}
+q55:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'a') {
+		goto q9;
+	} else {
+		goto q117;
+	}
+q58:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 's') {
+		goto q59;
+	} else {
+		goto q117;
+	}
+q59:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'o') {
+		goto q9;
+	} else {
+		goto q117;
+	}
+q21:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'm') {
+		goto q22;
+	} else {
+		goto q117;
+	}
+q22:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'p') {
+		goto q1;
+	} else if (codigo[i] == 's') {
+		goto q51;
+	} else if (codigo[i] == 'e') {
+		goto q42;
+	} else {
+		goto q117;
+	}
+q51:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'e') {
+		goto q9;
+	} else {
+		goto q117;
+	}
+q42:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'n') {
+		goto q43;
+	} else {
+		goto q117;
+	}
+q43:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'q') {
+		goto q44;
+	} else {
+		goto q117;
+	}
+q44:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'u') {
+		goto q45;
+	} else {
+		goto q117;
+	}
+q45:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'a') {
+		goto q46;
+	} else {
+		goto q117;
+	}
+q46:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'n') {
+		goto q47;
+	} else {
+		goto q117;
+	}
+q47:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 't') {
+		goto q48;
+	} else {
+		goto q117;
+	}
+q48:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'o') {
+		goto q9;
+	} else {
+		goto q117;
+	}
+q62:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 's') {
+		goto q71;
+	} else if (codigo[i] == 'n') {
+		goto q63;
+	} else {
+		goto q117;
+	}
+q71:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'c') {
+		goto q72;
+	} else {
+		goto q117;
+	}
+q72:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'r') {
+		goto q73;
+	} else {
+		goto q117;
+	}
+q73:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'e') {
+		goto q74;
+	} else {
+		goto q117;
+	}
+q74:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'v') {
+		goto q75;
+	} else {
+		goto q117;
+	}
+q75:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'a') {
+		goto q9;
+	} else {
+		goto q117;
+	}
+q63:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'q') {
+		goto q44;
+	} else if (codigo[i] == 't') {
+		goto q78;
+	} else {
+		goto q117;
+	}
+q78:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'a') {
+		goto q79;
+	} else {
+		goto q117;
+	}
+q79:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'o') {
+		goto q9;
+	} else {
+		goto q117;
+	}
+q119:
+	i++;
+	palavra[j++] = codigo[i];
+	if (
+		codigo[i] == '0' ||
+		codigo[i] == '1' ||
+		codigo[i] == '2' ||
+		codigo[i] == '3' ||
+		codigo[i] == '4' ||
+		codigo[i] == '5' ||
+		codigo[i] == '6' ||
+		codigo[i] == '7' ||
+		codigo[i] == '8' ||
+		codigo[i] == '9'
+	) {
+		goto q119;
+	} else if (codigo[i] == ' ') {
+		sprintf(palavra, "<numero,%s>\n", palavra);
+		printf("%s",palavra);
+		_escrever(output, palavra);
+		goto q0;
+	} else {
+		printf("<ERRO LEXICO>\n");
+		_escrever(output, "<ERRO LEXICO>\n");
+		return -1;
+	}
+q121:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'i') {
+		goto q122;
+	} else {
+		goto q117;
+	}
+q122:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'v') {
+		goto q9;
+	} else {
+		goto q117;
+	}
+q125:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'u') {
+		goto q126;
+	} else {
+		goto q117;
+	}
+q126:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == 'l') {
+		goto q9;
+	} else {
+		goto q117;
+	}
+q129:
 	i++;
 	palavra[j++] = codigo[i];
 	if (codigo[i] == ' ') {
-		printf("senao\n");
-		_escrever(output, 'senao\n');
+		sprintf(palavra, "%s\n", palavra);
+		printf("%s",palavra);
+		_escrever(output, palavra);
 		goto q0;
 	} else {
-		goto q117;
+		printf("<ERRO LEXICO>\n");
+		_escrever(output, "<ERRO LEXICO>\n");
+		return -1;
+	}
+q157:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == '*') {
+		goto q129;
+	} else {
+		printf("<ERRO LEXICO>\n");
+		_escrever(output, "<ERRO LEXICO>\n");
+		return -1;
+	}
+q158:
+	i++;
+	palavra[j++] = codigo[i];
+	if (codigo[i] == '/') {
+		goto q129;
+	} else {
+		printf("<ERRO LEXICO>\n");
+		_escrever(output, "<ERRO LEXICO>\n");
+		return -1;
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// ANALISADOR SINTATICO ///////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <letra>
 bool letra(bool write, bool error){
 	if (_matchAny("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")){
@@ -1133,15 +1397,19 @@ bool programa(bool write, bool error){
 	}
 	return false;
 }
-
-// Funcao main que chama a funcao programa para inicializar a analise lexica e sintetica.
-int main(){
-    programa(false, true);
-    printf("\n\nALUNOS RESPONSAVEIS:\n\n");
-    printf("///////////////////////////////////////////////////////////////////////////////////////////////////////\n\
+*/
+void alunosResponsaveis(){
+	printf("\n\nALUNOS RESPONSAVEIS:\n\n");
+	printf("///////////////////////////////////////////////////////////////////////////////////////////////////////\n\
 //////                             Guilherme Caulada - 31416489                                  //////\n\
 //////                             Guilherme Wentz - 31540929                                    //////\n\
 //////                             Lucas Paulosky - 31442412                                     //////\n\
 ///////////////////////////////////////////////////////////////////////////////////////////////////////");
-    return 0;
+}
+
+// Funcao main que chama a funcao programa para inicializar a analise lexica e sintetica.
+int main(){
+	analisadorLexico('MiniAlg.txt', 'Tokens.txt');
+	alunosResponsaveis();
+	return 0;
 }
