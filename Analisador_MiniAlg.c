@@ -131,8 +131,11 @@ bool _matchAny(char * check){
 // Funcao do analisador lexico
 void analisadorLexico(char *input, char *output){
 	char *codigo = _ler(input);
-	int i = 0;
+	printf("PROGRAMA LIDO (Espacos extras, tabs e enters sao ignorados):\n\n%s\n\n\n", codigo);
+	printf("GERANDO TOKENS:\n\n");
+	int i = -1;
 q0:
+	i++;
 	if (codigo[i] == 'p') {
 		goto q1;
 	} else if (codigo[i] == ';') {
@@ -220,21 +223,26 @@ q0:
 	} else if (codigo[i] == '*') {
 		goto q158;
 	else {
+		printf("<ERRO LEXICO>\n");
 		_escrever(output, "<ERRO LEXICO>\n");
+		return
 	}
 q1:
+	i++;
 	if (codigo[i] == 'r') {
 		goto q2;
 	} else {
 		goto q117;
 	}
 q2:
+	i++;
 	if (codigo[i] == 'o') {
 		goto q3;
 	} else {
 		goto q117;
 	}
 q3:
+	i++;
 	if (codigo[i] == 'g') {
 		goto q4;
 	} else if (codigo[i] == 'c') {
@@ -243,92 +251,148 @@ q3:
 		goto q117;
 	}
 q4:
+	i++;
 	if (codigo[i] == 'r') {
 		goto q5;
 	} else {
 		goto q117;
 	}
 q5:
+	i++;
 	if (codigo[i] == 'a') {
 		goto q6;
 	} else {
 		goto q117;
 	}
 q6:
+	i++;
 	if (codigo[i] == 'm') {
 		goto q7;
 	} else {
 		goto q117;
 	}
 q7:
+	i++;
 	if (codigo[i] == 'a') {
 		goto q8;
 	} else {
 		goto q117;
 	}
 q8:
+	i++;
 	if (codigo[i] == ' ') {
+		printf("programa\n");
 		_escrever(output, 'programa\n');
 		goto q0;
 	} else {
-		_escrever(output, '<ERRO LEXICO>\n');
+		goto q117;
 	}
 q10:
+	i++;
 	if (codigo[i] == 'e') {
 		goto q11;
 	} else {
 		goto q117;
 	}
 q11:
+	i++;
 	if (codigo[i] == 'd') {
 		goto q12;
 	} else {
 		goto q117;
 	}
 q12:
+	i++;
 	if (codigo[i] == 'i') {
 		goto q13;
 	} else {
 		goto q117;
 	}
 q13:
+	i++;
 	if (codigo[i] == 'm') {
 		goto q14;
 	} else {
 		goto q117;
 	}
 q14:
+	i++;
 	if (codigo[i] == 'e') {
 		goto q15;
 	} else {
 		goto q117;
 	}
 q15:
+	i++;
 	if (codigo[i] == 'n') {
 		goto q16;
 	} else {
 		goto q117;
 	}
 q16:
+	i++;
 	if (codigo[i] == 't') {
 		goto q17;
 	} else {
 		goto q117;
 	}
 q17:
+	i++;
 	if (codigo[i] == 'o') {
 		goto q18;
 	} else {
 		goto q117;
 	}
 q18:
+	i++;
 	if (codigo[i] == ' ') {
+		printf("procedimento\n");
 		_escrever(output, 'procedimento\n');
 		goto q0;
 	} else {
-		_escrever(output, '<ERRO LEXICO>\n');
+		goto q117;
 	}
-
+q82:
+	i++;
+	if (codigo[i] == 'e') {
+		goto q83;
+	} else {
+		goto q117;
+	}
+q83:
+	i++;
+	if (codigo[i] == ' ') {
+		printf("se\n");
+		_escrever(output, 'se\n');
+		goto q0;
+	else if (codigo[i] == 'n') {
+		goto q85;
+	} else {
+		goto q117;
+	}
+q85:
+	i++;
+	if (codigo[i] == 'a') {
+		goto q86;
+	} else {
+		goto q117;
+	}
+q86:
+	i++;
+	if (codigo[i] == 'o') {
+		goto q86;
+	} else {
+		goto q117;
+	}
+q87:
+	i++;
+	if (codigo[i] == ' ') {
+		printf("senao\n");
+		_escrever(output, 'senao\n');
+		goto q0;
+	} else {
+		goto q117;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1048,10 +1112,6 @@ bool programa(bool write, bool error){
 
 // Funcao main que chama a funcao programa para inicializar a analise lexica e sintetica.
 int main(){
-	i = -1;
-	codigo = _ler(ENTRADA);
-    printf("PROGRAMA LIDO (Espacos extras, tabs e enters sao ignorados):\n\n%s\n\n\n",codigo);
-    printf("TOKENS GERADOS (Lembre-se de deletar ou renomear o arquivo):\n\n");
     programa(false, true);
     printf("\n\nALUNOS RESPONSAVEIS:\n\n");
     printf("///////////////////////////////////////////////////////////////////////////////////////////////////////\n\
