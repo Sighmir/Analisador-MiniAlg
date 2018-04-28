@@ -131,7 +131,7 @@ bool _matchAny(char * check){
 // Funcao do analisador lexico
 int analisadorLexico(char *input, char *output){
 	char *codigo = _ler(input);
-	char *palavra = malloc(255);
+	char *palavra = (char *)malloc(255 * sizeof(char));
 	printf("PROGRAMA LIDO (Espacos extras, tabs e enters sao ignorados):\n\n%s\n\n\n", codigo);
 	printf("GERANDO TOKENS:\n\n");
 	int i = 0;
@@ -399,11 +399,7 @@ q82:
 q83:
 	palavra[j++] = codigo[i];
 	if (codigo[i] == ' ') {
-		sprintf(palavra, "%s\n", palavra);
-		printf("%s",palavra);
-		_escrever(output, palavra);
-		i++;
-		goto q0;
+		goto q9;
 	} else if (codigo[i] == 'n') {
 		i++;
 		goto q85;
@@ -653,9 +649,10 @@ q119:
 		i++;
 		goto q119;
 	} else if (codigo[i] == ' ') {
-		//sprintf(palavra, "<numero,%s>\n", palavra);
-		printf("%s\n",palavra);
-		_escrever(output, palavra);
+		char * aux = (char *) malloc(255 * sizeof(char));
+		sprintf(aux, "numero,%s\n", palavra);
+		printf("%s",aux);
+		_escrever(output, aux);
 		i++;
 		goto q0;
 	} else {
@@ -698,10 +695,10 @@ q126:
 q129:
 	palavra[j++] = codigo[i];
 	if (codigo[i] == ' ') {
-		i++;
 		sprintf(palavra, "%s\n", palavra);
 		printf("%s",palavra);
 		_escrever(output, palavra);
+		i++;
 		goto q0;
 	} else {
 		printf("<ERRO LEXICO>\n");
@@ -938,9 +935,10 @@ q117:
 		i++;
 		goto q117;
 	} else if (codigo[i] == ' ') {
-		sprintf(palavra, "%s\n", palavra);
-		printf("%s",palavra);
-		_escrever(output, palavra);
+		char * aux = (char *) malloc(255 * sizeof(char));
+		sprintf(aux, "identificador,%s\n", palavra);
+		printf("%s",aux);
+		_escrever(output, aux);
 		i++;
 		goto q0;
 	} else {
