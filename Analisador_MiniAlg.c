@@ -145,11 +145,20 @@ char ** _lerTokens(char *nome) {
 }
 
 // Funcao que escreve no arquivo
-void _escrever(char *nome, char *texto) {
-    FILE *arquivo = fopen(nome, "a");
+void _escrever(char *nome, char *texto)
+{
+	FILE *arquivo = fopen(nome, "a");
 
-    fprintf(arquivo, texto);
-    fclose(arquivo);
+	fprintf(arquivo, texto);
+	fclose(arquivo);
+}
+
+void _limpar(char *nome)
+{
+	FILE *arquivo = fopen(nome, "w");
+
+	fprintf(arquivo, "");
+	fclose(arquivo);
 }
 
 // Funcao que retorna o valor do proximo token sem consumi-lo.
@@ -175,6 +184,7 @@ char *_match(char *token){
 
 // Funcao do analisador lexico
 int analisadorLexico(char *input, char *output){
+	_limpar(output);
 	char *codigo = _lerCodigo(input);
 	char *palavra = (char *)malloc(255 * sizeof(char));
 	printf("PROGRAMA LIDO (Espacos extras, tabs e enters sao ignorados):\n\n%s\n\n\n", codigo);
