@@ -21,12 +21,17 @@
 ////////////////////////////////////// DECLARACAO DE FUNCOES E VARIAVEIS //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Variaveis globais
+char **tokens;
+int n_tokens;
+int i_tokens;
+
 // Funcoes do analisador (Descricao esta acima da funcao)
-char * _ler(char * nome); // Funcao que le o arquivo configurado na linha 25 como ENTRADA
-void _escrever(char * nome, char *texto); // Funcao que escreve no arquivo configurado na linha 26 como SAIDA
-char _lookahead(); // Funcao que retorna o valor do proximo simbolo lexico sem consumi-lo.
-char _match(); // Funcao que retorna o valor do proximo simbolo lexico consumindo-o.
-bool _matchAny(char * check); // Funcao que verifica se o valor do proximo simbolo lexico se iguala a qualquer um dos simbolos passados no argumento check como um array de simbolos.
+char *_ler(char *nome); // Funcao que le o arquivo configurado na linha 25 como ENTRADA
+void _escrever(char *nome, char *texto); // Funcao que escreve no arquivo configurado na linha 26 como SAIDA
+char *_lookahead(); // Funcao que retorna o valor do proximo token sem consumi-lo.
+char *_match(char *token); // Funcao que retorna o valor do proximo simbolo token consumindo-o.
+bool _matchAny(char *check); // Funcao que verifica se o valor do proximo simbolo lexico se iguala a qualquer um dos simbolos passados no argumento check como um array de simbolos.
 
 // Funcoes do analisador sintatico
 bool letra(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <letra>
@@ -67,7 +72,7 @@ bool programa(bool write, bool error); // Funcao que verifica se a proxima seque
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Funcao que le o arquivo
-char * _ler(char * nome) {
+char * _lerCodigo(char *nome) {
     FILE *arquivo = fopen(nome, "r");
     char *codigo;
     size_t n = 0;
@@ -94,35 +99,75 @@ char * _ler(char * nome) {
     return codigo;
 }
 
+int countLines(char *nome) {
+    FILE *arquivo = fopen(nome, "r");
+	int lines = 0;
+	char c;
+	while (!feof(arquivo))
+	{
+		c = fgetc(arquivo);
+		if (c == '\n')
+		{
+			lines++;
+		}
+	}
+	fclose(arquivo);
+	return lines;
+}
+
+char ** _lerTokens(char *nome) {
+	n_tokens = countLines(nome);
+    FILE *arquivo = fopen(nome, "r");
+	size_t n = 0;
+	ssize_t read;
+	int i, j = 0, k = 0;
+	char c;
+
+    if (arquivo == NULL) return NULL;
+	tokens = (char **)malloc(n_tokens * sizeof(char *));
+	
+	for (i = 0; i < n_tokens; i++) {
+		tokens[i] = (char *)malloc(255 * sizeof(char));
+		k = 0;
+		while ((c = fgetc(arquivo)) != EOF) {
+			if (c == '\n')
+			{
+				break;
+			} else if (c != ' ' && c != '\t' && c != 0){
+        		(tokens[i])[k++] = (char)c;
+			}
+    	}
+	}
+
+    fclose(arquivo);
+
+    return tokens;
+}
+
 // Funcao que escreve no arquivo
-void _escrever(char * nome, char *texto) {
+void _escrever(char *nome, char *texto) {
     FILE *arquivo = fopen(nome, "a");
 
     fprintf(arquivo, texto);
     fclose(arquivo);
 }
 
-/*/ Funcao que retorna o valor do proximo simbolo lexico sem consumi-lo.
-char _lookahead(){
-	return codigo[i+1];
+// Funcao que retorna o valor do proximo token sem consumi-lo.
+char *_lookahead(){
+	return tokens[i_tokens+1];
 }
 
-// Funcao que retorna o valor do proximo simbolo lexico consumindo-o.
-char _match(){
-	return codigo[++i];
-}
-
-// Funcao que verifica se o valor do proximo simbolo lexico se iguala a qualquer um dos simbolos passados no argumento check como um array de simbolos.
-bool _matchAny(char * check){
-	size_t len = strlen(check);
-	int j;
-	for (j = 0; j<len; j++){
-		if (_match() == check[j]) return true;
-		i--;
+// Funcao que retorna o valor do proximo token consumindo-o.
+char *_match(char *token){
+	if (_lookahead() == token) {
+		return tokens[++i_tokens];
+	} else {
+		char * aux = (char *) malloc(255 * sizeof(char));
+		sprintf(aux, "ERRO SINTATICO,%s\n", token);
+		printf("%s",aux);
+		return aux;
 	}
-	return false;
 }
-*/
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// ANALISADOR LEXICO //////////////////////////////////////////////
@@ -130,7 +175,7 @@ bool _matchAny(char * check){
 
 // Funcao do analisador lexico
 int analisadorLexico(char *input, char *output){
-	char *codigo = _ler(input);
+	char *codigo = _lerCodigo(input);
 	char *palavra = (char *)malloc(255 * sizeof(char));
 	printf("PROGRAMA LIDO (Espacos extras, tabs e enters sao ignorados):\n\n%s\n\n\n", codigo);
 	printf("GERANDO TOKENS:\n\n");
@@ -250,8 +295,8 @@ q0:
 	} else if (i == strlen(codigo)) {
 		return 0;
 	} else {
-		printf("<ERRO LEXICO>\n");
-		_escrever(output, "<ERRO LEXICO>\n");
+		printf("ERRO LEXICO\n");
+		_escrever(output, "ERRO LEXICO\n");
 		return -1;
 	}
 q1:
@@ -656,8 +701,8 @@ q119:
 		i++;
 		goto q0;
 	} else {
-		printf("<ERRO LEXICO>\n");
-		_escrever(output, "<ERRO LEXICO>\n");
+		printf("ERRO LEXICO\n");
+		_escrever(output, "ERRO LEXICO\n");
 		return -1;
 	}
 q121:
@@ -701,8 +746,8 @@ q129:
 		i++;
 		goto q0;
 	} else {
-		printf("<ERRO LEXICO>\n");
-		_escrever(output, "<ERRO LEXICO>\n");
+		printf("ERRO LEXICO\n");
+		_escrever(output, "ERRO LEXICO\n");
 		return -1;
 	}
 q157:
@@ -711,8 +756,8 @@ q157:
 		i++;
 		goto q129;
 	} else {
-		printf("<ERRO LEXICO>\n");
-		_escrever(output, "<ERRO LEXICO>\n");
+		printf("ERRO LEXICO\n");
+		_escrever(output, "ERRO LEXICO\n");
 		return -1;
 	}
 q158:
@@ -721,8 +766,8 @@ q158:
 		i++;
 		goto q129;
 	} else {
-		printf("<ERRO LEXICO>\n");
-		_escrever(output, "<ERRO LEXICO>\n");
+		printf("ERRO LEXICO\n");
+		_escrever(output, "ERRO LEXICO\n");
 		return -1;
 	}
 q89:
@@ -942,8 +987,8 @@ q117:
 		i++;
 		goto q0;
 	} else {
-		printf("<ERRO LEXICO>\n");
-		_escrever(output, "<ERRO LEXICO>\n");
+		printf("ERRO LEXICO\n");
+		_escrever(output, "ERRO LEXICO\n");
 		return -1;
 	}
 q133:
@@ -961,8 +1006,8 @@ q133:
 		i++;
 		goto q0;
 	} else {
-		printf("<ERRO LEXICO>\n");
-		_escrever(output, "<ERRO LEXICO>\n");
+		printf("ERRO LEXICO\n");
+		_escrever(output, "ERRO LEXICO\n");
 		return -1;
 	}
 q134:
@@ -977,8 +1022,8 @@ q134:
 		i++;
 		goto q0;
 	} else {
-		printf("<ERRO LEXICO>\n");
-		_escrever(output, "<ERRO LEXICO>\n");
+		printf("ERRO LEXICO\n");
+		_escrever(output, "ERRO LEXICO\n");
 		return -1;
 	}
 q135:
@@ -993,8 +1038,8 @@ q135:
 		i++;
 		goto q0;
 	} else {
-		printf("<ERRO LEXICO>\n");
-		_escrever(output, "<ERRO LEXICO>\n");
+		printf("ERRO LEXICO\n");
+		_escrever(output, "ERRO LEXICO\n");
 		return -1;
 	}
 }
@@ -1002,6 +1047,7 @@ q135:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// ANALISADOR SINTATICO ///////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /*
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <letra>
 bool letra(bool write, bool error){
@@ -1692,7 +1738,7 @@ bool bloco(bool write, bool error){
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <programa>
-bool programa(bool write, bool error){
+bool programa(){
 	if (palavra_programa(true,false)) {
 		if (identificador(true,false)) {
 			printf("\n");
@@ -1714,6 +1760,21 @@ bool programa(bool write, bool error){
 	return false;
 }
 */
+
+void printTokens() {
+	int i;
+	for (i = 0; i < n_tokens; i++) {
+		printf("Token %d: %s\n", i, tokens[i]);
+	}
+}
+
+int analisadorSintatico(char *input, char *output){
+	printf("\n\n\nINICIANDO ANALISE SINTATICA\n");
+	tokens = _lerTokens(input);
+	printf("\nTOKENS LIDOS:\n\n");
+	printTokens();
+}
+
 void alunosResponsaveis(){
 	printf("\n\nALUNOS RESPONSAVEIS:\n\n");
 	printf("///////////////////////////////////////////////////////////////////////////////////////////////////////\n\
@@ -1725,7 +1786,8 @@ void alunosResponsaveis(){
 
 // Funcao main que chama a funcao programa para inicializar a analise lexica e sintetica.
 int main(){
-	analisadorLexico("MiniAlg.txt", "Tokens.txt");
+	analisadorLexico("MiniAlg.txt", "Lexicos.txt");
+	analisadorSintatico("Lexicos.txt", "Sintaticos.txt");
 	alunosResponsaveis();
 	return 0;
 }
