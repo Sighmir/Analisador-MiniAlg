@@ -31,6 +31,10 @@ char **tokens;
 int n_tokens;
 int i_tokens = -1;
 
+bool expressao_simples();
+bool comando_composto();
+bool bloco();
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// FUNCOES DO ANALISADOR //////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1117,293 +1121,116 @@ q163:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// ANALISADOR SINTATICO ///////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-// Funcao que verifica se a proxima sequencia sintatica existente equivale a <numero>
-bool numero(bool write,bool error){
-	bool ultima = false;
-	char *token;
- 	token = (char*) calloc (256, sizeof(char));
-	strcpy(token, "<numero,");
-	size_t len = strlen(token);
-	numero_digito: 
-	if (lookahead() == ' ') {
-		ultima = true;
-	}
-	if (ultima){
-		if (match(' ')) {
-			if (write) {
-				token[len++] = '>';
-				token[len++] = ' ';
-				printf("%s", token);
-				escrever(SAIDA, token);
-			}
-			return true;
-		} else {
-			if (error) {
-	  			printf("<ERRO SINTATICO,numero> ");
-				escrever(SAIDA, "<ERRO SINTATICO,numero> ");
-			}
-			return false;
-			}
-	} else {
-		if (digito(false,false)) {
-			token[len++] = codigo[i];
-			goto numero_digito;
-		}
-	}
-}
-
-// Funcao que verifica se a proxima sequencia sintatica existente equivale a <bool>
-bool boolean(bool write,bool error){
-	if (verdadeiro(false, false)) {
-		if (write) {
-			printf("<bool,verdadeiro> ");
-			escrever(SAIDA, "<bool,verdadeiro> ");
-		}
-		return true;
-	} else if (falso(false, false)) {
-		if (write) {
-			printf("<bool,falso> ");
-			escrever(SAIDA, "<bool,falso> ");
-		}
-		return true;
-	} else if (error) {
-   		printf("<ERRO SINTATICO,bool> ");
-		escrever(SAIDA, "<ERRO SINTATICO,bool> ");
-	}
-	return false;
-}
-
-// Funcao que verifica se a proxima sequencia sintatica existente equivale a <identificador>
-bool identificador(bool write, bool error){
-	if (palavra_reservada(false,false)) {
-		return false;
-	}
-	bool ultima = false;
-	char *token;
- 	token = (char*) calloc (256, sizeof(char));
-	strcpy(token, "<identificador,");
-	size_t len = strlen(token);
-	ident_letra: 
-	if (lookahead() == ' ') {
-		ultima = true;
-	}
-	if (ultima){
-		if (match() == ' ') {
-			if (write) {
-				token[len++] = '>';
-				token[len++] = ' ';
-				printf("%s", token);
-				escrever(SAIDA, token);
-			}
-			return true;
-		} else {
-			if (error) {
-	  			printf("<ERRO SINTATICO,identificador> ");
-				escrever(SAIDA, "<ERRO SINTATICO,identificador> ");
-			}
-			return false;
-			}
-	} else {
-		if (letra(false,false)) {
-			token[len++] = codigo[i];
-			goto ident_letra;
-		}
-	}
-}
-
-// Funcao que verifica se a proxima sequencia sintatica existente equivale a <variavel>
-bool variavel(bool write,bool error){
-	if (identificador(true,false)) {
-		if (write) {
-			printf("<variavel> ");
-			escrever(SAIDA, "<variavel> ");
-		}
-		return true;
-	} else if (error) {
-   		printf("<ERRO SINTATICO,variavel> ");
-		escrever(SAIDA, "<ERRO SINTATICO,variavel> ");
-	}
-	return false;
-}
-
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <fator>
-bool fator(bool write, bool error){
-	if (numero(true,false)) {
-		if (write) {
-			printf("<fator,numero> ");
-			escrever(SAIDA, "<fator,numero> ");
-		}
+bool fator(){
+	if (lookahead("numero")) {
+		match("numero");
 		return true;
-	} else if (boolean(true,false)) {
-		if (write) {
-			printf("<fator,boolean> ");
-			escrever(SAIDA, "<fator,boolean> ");
-		}
+	} else if (lookahead("verdadeiro")) {
+		match("verdadeiro");
 		return true;
-	} else if (parenteses_esquerda(true,false)) {
-		if (expressao_simples(true,false)) {
-			if (parenteses_direita(true,false)) {
-				if (write) {
-					printf("<fator,expressao simples> ");
-					escrever(SAIDA, "<fator,expressao simples> ");
-				}
+	} else if (lookahead("falso")) {
+		match("falso");
+		return true;
+	} else if (lookahead("(")) {
+		match("(");
+		if (expressao_simples()) {
+			if (match(")")) {
 				return true;
 			}
 		}
-	} else if (variavel(false,false)) {
-		if (write) {
-			printf("<fator,variavel> ");
-			escrever(SAIDA, "<fator,variavel> ");
-		}
+	} else if (lookahead("identificador")) {
+		match("identificador");
 		return true;
-	}
-	if (error) {
-   		printf("<ERRO SINTATICO,fator> ");
-		escrever(SAIDA, "<ERRO SINTATICO,fator> ");
 	}
 	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <termo>
-bool termo(bool write, bool error){
-	while (fator(false,false)) {
-		if (operador_mul(true,false)) {
-			continue;
-		}else if (operador_div(true,false)) {
-			continue;
-		} else {
-			if (write) {
-				printf("<termo> ");
-				escrever(SAIDA, "<termo> ");
-			}
-			return true;
+bool termo(){
+	fator:
+	if (fator()) {
+		if (lookahead("mul")) {
+			match("mul");
+			goto fator;
+		}else if (lookahead("div")) {
+			match("div");
+			goto fator;
 		}
+		return true;
 	} 
-   	if (error) {
-		printf("<ERRO SINTATICO,termo> ");
-		escrever(SAIDA, "<ERRO SINTATICO,termo> ");
-	}
 	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <expressao simples>
-bool expressao_simples(bool write, bool error){
-	bool tem_um = false;
-	exp_smp: 
-	if (operador_mais(true,false)) {
-		if (termo(false,false)) {
-			tem_um = true;
-			goto exp_smp;
-		}
-	} else if (operador_menos(true,false)) {
-			if (termo(false,false)) {
-				tem_um = true;
-				goto exp_smp;
-			}
-	} else {
-		if (termo(false,false)) {
-			tem_um = true;
-			goto exp_smp;
-		}
+bool expressao_simples(){
+	if (lookahead("+")) {
+		match("+");
+	} else if (lookahead("-")) {
+		match("-");
 	}
-	if (tem_um){
-		if (write) {
-			printf("<expressao simples> ");
-			escrever(SAIDA, "<expressao simples> ");
+	if (termo()) {
+		while(lookahead("+") || lookahead("-")){
+			if (lookahead("+")) {
+				match("+");
+				termo();
+			} else if (lookahead("-")) {
+				match("-");
+				termo();
+			}
 		}
 		return true;
-	} else {
-		if (error) {
-			printf("<ERRO SINTATICO,expressao simples> ");
-			escrever(SAIDA, "<ERRO SINTATICO,expressao simples> ");
-		}
-		return false;
 	}
+	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <relacao>
-bool relacao(bool write, bool error){
-	if (relacao_igual(false,false)){
-		if (write) {
-			printf("<relacao,eq> ");
-			escrever(SAIDA, "<relacao,eq> ");
-		}
+bool relacao(){
+	if (lookahead("==")){
+		match("==");
 		return true;
-	} else if (relacao_menor(false,false)) {
-		if (write) {
-			printf("<relacao,sm> ");
-			escrever(SAIDA, "<relacao,sm> ");
-		}
+	} else if (lookahead("<")) {
+		match("<");
 		return true;
-	} else if (relacao_maior(false,false)) {
-		if (write) {
-			printf("<relacao,bg> ");
-			escrever(SAIDA, "<relacao,bg> ");
-		}
+	} else if (lookahead(">")) {
+		match(">");
 		return true;
-	} else if (relacao_menor_igual(false,false)) {
-		if (write) {
-			printf("<relacao,smeq> ");
-			escrever(SAIDA, "<relacao,smeq> ");
-		}
+	} else if (lookahead("<=")) {
+		match("<=");
 		return true;
-	} else if (relacao_maior_igual(false,false)) {
-		if (write) {
-			printf("<relacao,bgeq> ");
-			escrever(SAIDA, "<relacao,bgeq> ");
-		}
+	} else if (lookahead(">=")) {
+		match(">=");
 		return true;
-	} else if (relacao_diferente(false,false)) {
-		if (write) {
-			printf("<relacao,dif> ");
-			escrever(SAIDA, "<relacao,dif> ");
-		}
+	} else if (lookahead("<>")) {
+		match("<>");
 		return true;
-	} else {
-		if (error) {
-			printf("<ERRO SINTATICO,relacao> ");
-			escrever(SAIDA, "<ERRO SINTATICO,relacao> ");
-		}
-		return false;
-	}
+	} 
+	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <expressao>
-bool expressao(bool write, bool error){
-	exp_simples:
-	if (expressao_simples(false,false)){
-		if (relacao(true,false)) {
-			goto exp_simples;
-		} else {
-			if (write) {
-				printf("<expressao> ");
-				escrever(SAIDA, "<expressao> ");
+bool expressao(){
+	if (expressao_simples()){
+		if (relacao()) {
+			if (expressao_simples()) {
+				return true;
 			}
-			return true;
 		}
-	} else {
-		if (error) {
-			printf("<ERRO SINTATICO,expressao> ");
-			escrever(SAIDA, "<ERRO SINTATICO,expressao> ");
-		}
-		return false;
+		return true;
 	}
+	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <comando repetitivo>
-bool comando_repetitivo(bool write, bool error){
-	if (enquanto(true,false)) {
-		if (parenteses_esquerda(true,false)) {
-			if (expressao(false,false)) {
-				if (parenteses_direita(true,false)) {
-					if (faca(true,false)) {
-						if (comando_composto(false,false)){
-							if (fimenquanto(true,false)) {
-								if (write) {
-   									printf("<comando repetitivo> ");
-									escrever(SAIDA, "<comando repetitivo> ");
-								}
+bool comando_repetitivo(){
+	if (lookahead("enquanto")) {
+		match("enquanto");
+		if (match("(")) {
+			if (expressao()) {
+				if (match(")")) {
+					if (match("faca")) {
+						if (comando_composto()){
+							if (match("fimenquanto")) {
 								return true;
 							}
 						}
@@ -1411,36 +1238,26 @@ bool comando_repetitivo(bool write, bool error){
 				}
 			}
 		}
-	}
-	if (error) {
-   		printf("<ERRO SINTATICO,comando repetitivo> ");
-		escrever(SAIDA, "<ERRO SINTATICO,comando repetitivo> ");
 	}
 	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <comando condicional>
-bool comando_condicional(bool write, bool error){
-	if (se(true,false)) {
-		if (parenteses_esquerda(true,false)) {
-			if (expressao(false,false)) {
-				if (parenteses_direita(true,false)) {
-					if (entao(true,false)) {
-						if (comando_composto(false,false)){
-							if (senao(true,false)) {
-								if (!comando_composto(false,false)){
-									if (error) {
-		   								printf("<ERRO SINTATICO,comando condicional> ");
-										escrever(SAIDA, "<ERRO SINTATICO,comando condicional> ");
-									}
+bool comando_condicional(){
+	if (lookahead("se")) {
+		match("se");
+		if (match("(")) {
+			if (expressao()) {
+				if (match(")")) {
+					if (match("entao")) {
+						if (comando_composto()){
+							if (lookahead("senao")) {
+								match("senao");
+								if (!comando_composto()){
 									return false;
 								}	
 							}
-							if (fimse(true,false)) {
-								if (write) {
-   									printf("<comando condicional> ");
-									escrever(SAIDA, "<comando condicional> ");
-								}
+							if (match("fimse")) {
 								return true;
 							}
 						}
@@ -1449,231 +1266,162 @@ bool comando_condicional(bool write, bool error){
 			}
 		}
 	}
-	if (error) {
-   		printf("<ERRO SINTATICO,comando condicional> ");
-		escrever(SAIDA, "<ERRO SINTATICO,comando condicional> ");
-	}
 	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <lista de parametros>
-bool lista_de_parametros(bool write, bool error){
-	if (parenteses_esquerda(true,false)) {
-		param: if (identificador(true,false) || numero(true,false) || boolean(true,false)) {
-			if (virgula(true,false)){
-				goto param;
-			} else if (parenteses_direita(true,false)) {
-				if (write) {
-   					printf("<lista de parametros> ");
-					escrever(SAIDA, "<lista de parametros> ");
-				}
-				return true;
-			}
+bool lista_de_parametros(){
+	if (match("(")) {
+		param:
+		if (lookahead("identificador")) {
+			match("identificador");
+			match(",");
+			goto param;
+		} else if (lookahead("numero")) {
+			match("numero");
+			match(",");
+			goto param;
+		} else if (lookahead("falso")) {
+			match("falso");
+			match(",");
+			goto param;
+		} else if (lookahead("verdadeiro")) {
+			match("verdadeiro");
+			match(",");
+			goto param;
+		} else if (lookahead(")")) {
+			match(")");
+			return true;
 		}
-	}
-	if (error) {
-   		printf("<ERRO SINTATICO,lista de parametros> ");
-		escrever(SAIDA, "<ERRO SINTATICO,lista de parametros> ");
 	}
 	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <chamada de procedimento>
-bool chamada_de_procedimento(bool write, bool error){
-	if ((identificador(true,false)) && 
-		(lista_de_parametros(true,false)) &&
-		(ponto_e_virgula(true,false))) {
-		if (write) {
-   			printf("<chamada de procedimento> ");
-			escrever(SAIDA, "<chamada de procedimento> ");
-		}
-		return true;
-	}
-	if (error) {
-   		printf("<ERRO SINTATICO,chamada de procedimento> ");
-		escrever(SAIDA, "<ERRO SINTATICO,chamada de procedimento> ");
-	}
-	return false;
-}
-
-// Funcao que verifica se a proxima sequencia sintatica existente equivale a <atribuicao>
-bool atribuicao(bool write, bool error){
-	if (variavel(false,false)) {
-		if (operador_igual(true,false)) {
-			if (expressao(false,false)) {
-				if (ponto_e_virgula(true,false)) {
-					if (write) {
-			   			printf("<atribuicao> ");
-						escrever(SAIDA, "<atribuicao> ");
-					}
+bool chamada_de_procedimento(){
+	if (lookahead("identificador")){
+		if (match("identificador")) {
+			if (lista_de_parametros()) {
+				if (match(";")) {
 					return true;
 				}
 			}
 		}
 	}
-	if (error) {
-		printf("<ERRO SINTATICO,atribuicao> ");
-		escrever(SAIDA, "<ERRO SINTATICO,atribuicao> ");
+	return false;
+}
+
+// Funcao que verifica se a proxima sequencia sintatica existente equivale a <atribuicao>
+bool atribuicao(){
+	if (lookahead("identificador")){
+		if (match("identificador")) {
+			if (match("=")) {
+				if (expressao()) {
+					if (match(";")) {
+						return true;
+					}
+				}
+			}
+		}
 	}
 	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <comando>
-bool comando(bool write, bool error){
-	if (escreva(true,false)) {
-		if (parenteses_esquerda(true,false)) {
-			if (identificador(true,false)){
-				if (parenteses_direita(true,false)) {
-					if (ponto_e_virgula(true,false)) {
-						if (write) {
-	  							printf("<comando,escreva> ");
-							escrever(SAIDA, "<comando,escreva> ");
+bool comando(){
+	if (lookahead("escreva")) {
+		if (match("escreva")) {
+			if (match("(")) {
+				if (match("identificador")){
+					if (match(")")) {
+						if (match(";")) {
+							return true;
 						}
-						return true;
 					}
 				}
 			}
 		}
-	} else if (comando_repetitivo(false,false)) {
-			if (write) {
-	  			printf("<comando,repetitivo> ");
-			escrever(SAIDA, "<comando,repetitivo> ");
-		}
+	} else if (comando_repetitivo()) {
 		return true;
-	} else if (comando_condicional(false,false)) {
-		if (write) {
-	  			printf("<comando,condicional> ");
-			escrever(SAIDA, "<comando,condicional> ");
-		}
+	} else if (comando_condicional()) {
 		return true;
-	} else if (atribuicao(false,false)) {
-		if (write) {
-   			printf("<comando,atribuicao> ");
-			escrever(SAIDA, "<comando,atribuicao> ");
-		}
+	} else if (atribuicao()) {
 		return true;
-	} else if (chamada_de_procedimento(false,false)){
-		if (write) {
-	  			printf("<comando,chamada de procedimento> ");
-			escrever(SAIDA, "<comando,chamada de procedimento> ");
-		}
+	} else if (chamada_de_procedimento()){
 		return true;
-	}	
-	if (error) {
-   		printf("<ERRO SINTATICO,comando> ");
-		escrever(SAIDA, "<ERRO SINTATICO,comando> ");
 	}
 	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <comando composto>
-bool comando_composto(bool write, bool error){
-	bool tem_um = false;
-	while (comando(false,false)){
-		tem_um = true;
-		if (!ponto_e_virgula(true,false)) {
-			if (error) {
-   				printf("<ERRO SINTATICO,comando composto> ");
-				escrever(SAIDA, "<ERRO SINTATICO,comando composto> ");
-			}
-		}
-	}
-	if (tem_um) {
-		if (write) {
-	   		printf("<comando composto> ");
-			escrever(SAIDA, "<comando composto> ");
-		}
+bool comando_composto(){
+	if (comando()) {
+		while (comando()){
+			continue;
+		} 
 		return true;
-	} else if (error) {
-   		printf("<ERRO SINTATICO,comando composto> ");
-		escrever(SAIDA, "<ERRO SINTATICO,comando composto> ");
 	}
 	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <parametro formal>
-bool parametro_formal(bool write, bool error){
-	if ((tipo(true,false)) &&
-		(dois_pontos(true,false))) {
-		if (identificador(true,false)) {
-			if (write) {
-	   			printf("<parametro formal> ");
-				escrever(SAIDA, "<parametro formal> ");
+bool parametro_formal(){
+	if (match("tipo")) {
+		if (match(":")) {
+			if (match("identificador")) {
+				return true;
 			}
-			return true;
 		}
-	}
-	if (error) {
-   		printf("<ERRO SINTATICO,parametro formal> ");
-		escrever(SAIDA, "<ERRO SINTATICO,parametro formal> ");
 	}
 	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <parametros formais>
-bool parametros_formais(bool write, bool error){
-	while (parametro_formal(false,false)){
-		if (!virgula(true,false)) {
-			break;
+bool parametros_formais(){
+	if (match("(")) {
+		if (lookahead(")")) {
+			match(")");
+			return true;
+		} else if (parametro_formal()){
+			while (lookahead(",")) {
+				match(",");
+				parametro_formal();
+			}
+			if (match(")")) {
+				return true;
+			}
 		}
 	}
-	if (write) {
-		printf("<parametros formais> ");
-		escrever(SAIDA, "<parametros formais> ");
-	}
-	return true;
+	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <declaracao de procedimento>
-bool declaracao_de_procedimento(bool write, bool error){
-	if (procedimento(true,false)) {
-		if ((identificador(true,false)) &&
-			(parenteses_esquerda(true,false))) {
-			if ((parametros_formais(false,false)) &&
-				(parenteses_direita(true,false))) {
-				printf("\n");
-				escrever(SAIDA, "\n");
-				if (bloco(false,false)) {
-					if (fimprocedimento(true,false)) {
-						if (write) {
-				   			printf("<declaracao de procedimento> ");
-							escrever(SAIDA, "<declaracao de procedimento> ");
-						}
+bool declaracao_de_procedimento(){
+	if (lookahead("procedimento")) {
+		match("procedimento");
+		if (match("identificador")) {
+			if (parametros_formais()) {
+				if (bloco()) {
+					if (match("fimprocedimento")) {
 						return true;
 					}
 				}
 			}
 		}
 	}
-	if (error) {
-   		printf("<ERRO SINTATICO,declaracao de procedimento> ");
-		escrever(SAIDA, "<ERRO SINTATICO,declaracao de procedimento> ");
-	}
 	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <parte de declaracao de subrotinas>
-bool parte_de_declaracoes_de_subrotinas(bool write, bool error){
-	while (declaracao_de_procedimento(false,false)){
-		if (!ponto_e_virgula(true,false)) {
-			if (error) {
-   				printf("<ERRO SINTATICO,parte de declaracao de subrotinas> ");
-				escrever(SAIDA, "<ERRO SINTATICO,parte de declaracao de subrotinas> ");
-			}
-			return false;
-		}
+bool parte_de_declaracoes_de_subrotinas(){
+	while (declaracao_de_procedimento()){
+		continue;
 	} 
-	if (write) {
-		printf("<parte de declaracao de subrotinas> ");
-		escrever(SAIDA, "<parte de declaracao de subrotinas> ");
-	}
 	return true;
 }
 
-*/
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <lista de identificadores>
 bool lista_de_identificadores(){
-	bool ultimo = false;
 	if (match("identificador")){
 		while (lookahead(",")) {
 			match(",");
@@ -1702,21 +1450,20 @@ bool declaracao_de_variaveis(){
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <parte de declaracao de variaveis>
 bool parte_de_declaracoes_de_variaveis(){
-	bool tem_um = false;
 	while (declaracao_de_variaveis()){
-		tem_um = true;
+		continue;
 	} 
-	return tem_um;
+	return true;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <bloco>
 bool bloco(){
 	if (parte_de_declaracoes_de_variaveis()) {
-		//if (parte_de_declaracoes_de_subrotinas()) {
-			//if (comando_composto()) {
+		if (parte_de_declaracoes_de_subrotinas()) {
+			if (comando_composto()) {
 				return true;
-			//}
-		//}
+			}
+		}
 	}
 	return false;
 }
@@ -1726,7 +1473,9 @@ bool programa(){
 	if (match("programa")) {
 		if (match("identificador")) {
 			if ((bloco())) {
-				return true;
+				if (match("fimprograma")) {
+					return true;
+				}
 			}
 		}
 	}
