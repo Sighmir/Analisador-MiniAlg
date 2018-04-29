@@ -1,6 +1,6 @@
 programa 
 identificador,correto 
-inteiro 
+tipo,inteiro 
 : 
 identificador,a 
 , 
@@ -8,7 +8,7 @@ identificador,b
 , 
 identificador,c 
 ; 
-booleano 
+tipo,booleano 
 : 
 identificador,d  
 , 
@@ -19,11 +19,11 @@ identificador,f
 procedimento 
 identificador,proc  
 ( 
-inteiro 
+tipo,inteiro 
 : 
 identificador,al 
 ) 
-inteiro 
+tipo,inteiro 
 : 
 identificador,a 
 , 
@@ -31,7 +31,7 @@ identificador,b
 , 
 identificador,c 
 ; 
-booleano 
+tipo,booleano 
 : 
 identificador,d  
 , 

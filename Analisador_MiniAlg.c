@@ -137,36 +137,61 @@ char* deleteLastChar(char* word)
     return word;
 }
 
-// Funcao que retorna o valor do proximo token sem consumi-lo.
-char *lookahead(){
-	return tokens[i_tokens+1];
-}
-
-
-char **split(char *string, int *num, char *sep)
+char **splitToken(char *string, int *num, char *sep)
 {
 	char *pch;
 	char **out = 0;
 	int i = 0;
-	pch = strtok(string, sep);
+	if (strcmp(string,sep) != 0) {
+		pch = strtok(string, sep);
 
-	while (pch != 0)
-	{
+		while (pch != 0)
+		{
+			out = realloc(out, (i + 1) * sizeof(char *));
+			out[i] = malloc(strlen(pch) + 1);
+			strcpy(out[i], pch);
+			++i;
+			pch = strtok(NULL, sep);
+		}
+		if (i > 1) {
+			sprintf(string, "%s,%s", out[0], out[1]);
+		} else {
+			sprintf(string, "%s", out[0]);
+		}
+	} else {
 		out = realloc(out, (i + 1) * sizeof(char *));
-		out[i] = malloc(strlen(pch) + 1);
-		strcpy(out[i], pch);
+		out[i] = malloc(strlen(sep) + 1);
+		strcpy(out[i], sep);
 		++i;
-		pch = strtok(NULL, sep);
 	}
 	*num = i;
 	return out;
 }
 
+// Funcao que retorna o valor do proximo token sem consumi-lo.
+bool lookahead(char *token){
+	int num = 0;
+	char *tk = tokens[i_tokens+1];
+	char **spt = splitToken(tk, &num, ",");
+	if (strcmp(tk,token) == 0) {
+		spt[0] = tk;
+	}
+	if (strcmp(token, spt[0]) == 0) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 // Funcao que retorna o valor do proximo token consumindo-o.
 bool match(char *token){
-	int num;
+	int num = 0;
+	char *tk = tokens[i_tokens+1];
 	char * aux = (char *) malloc(255 * sizeof(char));
-	char **spt = split(lookahead(), &num, ",");
+	char **spt = splitToken(tk, &num, ",");
+	if (strcmp(tk,token) == 0) {
+		spt[0] = tk;
+	}
 	if (strcmp(token, spt[0]) == 0) {
 		if (num > 1) {
 			sprintf(aux, "%s,%s\n", spt[0], spt[1]);
@@ -839,7 +864,7 @@ q94:
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
 		i++;
-		goto q9;
+		goto q163;
 	} else {
 		goto q117;
 	}
@@ -895,7 +920,7 @@ q103:
 	palavra[j++] = codigo[i];
 	if (codigo[i] == 'o') {
 		i++;
-		goto q9;
+		goto q163;
 	} else {
 		goto q117;
 	}
@@ -1074,6 +1099,18 @@ q135:
 		printf("%s",aux);
 		escrever(output, aux);
 		return false;
+	}
+q163:
+	palavra[j++] = codigo[i];
+	if (codigo[i] == ' ') {
+		char * aux = (char *) malloc(255 * sizeof(char));
+		sprintf(aux, "tipo,%s\n", palavra);
+		printf("%s", aux);
+		escrever(output, aux);
+		i++;
+		goto q0;
+	} else {
+		goto q117;
 	}
 }
 
@@ -1633,120 +1670,64 @@ bool parte_de_declaracoes_de_subrotinas(bool write, bool error){
 	return true;
 }
 
+*/
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <lista de identificadores>
-bool lista_de_identificadores(bool write, bool error){
+bool lista_de_identificadores(){
 	bool ultimo = false;
-	lista_identificador: 
-	if (identificador(true,false)){
-		if (!virgula(true,false)) {
-			ultimo = true;
+	if (match("identificador")){
+		while (lookahead(",")) {
+			match(",");
+			match("identificador");
 		}
-		if (!ultimo) {
-			goto lista_identificador;
-		} else {
-			if (write) {
-		   		printf("<lista de identificadores> ");
-				escrever(SAIDA, "<lista de identificadores> ");
-			}
+		if (match(";")) {
 			return true;
 		}
-	} 
-	if (error) {
-   		printf("<ERRO SINTATICO,lista de identificadores> ");
-		escrever(SAIDA, "<ERRO SINTATICO,lista de identificadores> ");
-	}
-	return false;
-}
-
-// Funcao que verifica se a proxima sequencia sintatica existente equivale a <tipo>
-bool tipo(bool write, bool error){
-	if (inteiro(false,false)) {
-		if (write) {
-			printf("<tipo,inteiro> ");
-			escrever(SAIDA, "<tipo,inteiro> ");
-		}
-		return true;
-	} else if (booleano(false,false)) {
-		if (write) {
-			printf("<tipo,booleano> ");
-			escrever(SAIDA, "<tipo,booleano> ");
-		}
-		return true;
-	} else if (error) {
-   		printf("<ERRO SINTATICO,tipo> ");
-		escrever(SAIDA, "<ERRO SINTATICO,tipo> ");
 	}
 	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <declaracao de variaveis>
-bool declaracao_de_variaveis(bool write, bool error){
-	if ((tipo(true,false)) &&
-		(dois_pontos(true,false))) {
-		if ((lista_de_identificadores(false,false)) &&
-			(ponto_e_virgula(true,false))) {
-			if (write) {
-		  		printf("<declaracao de variaveis> ");
-				escrever(SAIDA, "<declaracao de variaveis> ");
+bool declaracao_de_variaveis(){
+	if (lookahead("tipo")) {
+		if (match("tipo")) {
+			if (match(":")) {
+				if (lista_de_identificadores()) {
+					return true;
+				}
 			}
-			return true;
 		}
-	}
-	if (error) {
-   		printf("<ERRO SINTATICO,declaracao de variaveis> ");
-		escrever(SAIDA, "<ERRO SINTATICO,declaracao de variaveis> ");
 	}
 	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <parte de declaracao de variaveis>
-bool parte_de_declaracoes_de_variaveis(bool write, bool error){
+bool parte_de_declaracoes_de_variaveis(){
 	bool tem_um = false;
-	while (declaracao_de_variaveis(false,false)){
+	while (declaracao_de_variaveis()){
 		tem_um = true;
 	} 
-	if (tem_um){
-		if (write) {
-			printf("<parte de declaracao de variaveis> ");
-			escrever(SAIDA, "<parte de declaracao de variaveis> ");
-		}
-		return true;
-	}else {
-		if (error) {
-   			printf("<ERRO SINTATICO,parte de declaracao de variaveis> ");
-			escrever(SAIDA, "<ERRO SINTATICO,parte de declaracao de variaveis> ");
-		}
-		return false;
-	}
+	return tem_um;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <bloco>
-bool bloco(bool write, bool error){
-	parte_de_declaracoes_de_variaveis();
-	parte_de_declaracoes_de_subrotinas();
-	if (comando_composto(false,false)) {
-		if (write) {
-			printf("<bloco> ");
-			escrever(SAIDA, "<bloco> ");
-		}
-		return true;
-	} else {
-		if (error) {
-			printf("<ERRO SINTATICO,bloco> ");
-			escrever(SAIDA, "<ERRO SINTATICO,bloco> ");
-		}
-		return true;
+bool bloco(){
+	if (parte_de_declaracoes_de_variaveis()) {
+		//if (parte_de_declaracoes_de_subrotinas()) {
+			//if (comando_composto()) {
+				return true;
+			//}
+		//}
 	}
+	return false;
 }
 
-*/
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <programa>
 bool programa(){
 	if (match("programa")) {
 		if (match("identificador")) {
-			//if ((bloco())) {
+			if ((bloco())) {
 				return true;
-			//}
+			}
 		}
 	}
 	return false;
