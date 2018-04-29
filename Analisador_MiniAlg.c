@@ -333,9 +333,6 @@ q0:
 	} else if (codigo[i] == '/') {
 		i++;
 		goto q157;
-	} else if (codigo[i] == '*') {
-		i++;
-		goto q158;
 	} else if (i == strlen(codigo)) {
 		return true;
 	} else {
@@ -804,19 +801,7 @@ q157:
 	palavra[j++] = codigo[i];
 	if (codigo[i] == '*') {
 		i++;
-		goto q129;
-	} else {
-		char * aux = (char *) malloc(255 * sizeof(char));
-		sprintf(aux, "ERRO LEXICO,%s\n", deleteLastChar(palavra));
-		printf("%s",aux);
-		escrever(output, aux);
-		return false;
-	}
-q158:
-	palavra[j++] = codigo[i];
-	if (codigo[i] == '/') {
-		i++;
-		goto q129;
+		goto q164;
 	} else {
 		char * aux = (char *) malloc(255 * sizeof(char));
 		sprintf(aux, "ERRO LEXICO,%s\n", deleteLastChar(palavra));
@@ -1116,6 +1101,19 @@ q163:
 	} else {
 		goto q117;
 	}
+q164:
+	if (codigo[i] == '*') {
+		i++;
+		if (codigo[i] == '/') {
+			i++;
+			if (codigo[i] == ' ') {
+				i++;
+				goto q0;
+			}
+		}
+	}
+	i++;
+	goto q164;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
