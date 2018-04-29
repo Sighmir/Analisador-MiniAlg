@@ -21,58 +21,22 @@
 ////////////////////////////////////// DECLARACAO DE FUNCOES E VARIAVEIS //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Variaveis globais
+// VARIAVEIS DO ANALISADOR SINTATICO
+
+#define MINIALG "MiniAlg.txt"
+#define LEXICO "Lexico.txt"
+#define SINTATICO "Sintatico.txt"
+
 char **tokens;
 int n_tokens;
-int i_tokens;
-
-// Funcoes do analisador (Descricao esta acima da funcao)
-char *_ler(char *nome); // Funcao que le o arquivo configurado na linha 25 como ENTRADA
-void _escrever(char *nome, char *texto); // Funcao que escreve no arquivo configurado na linha 26 como SAIDA
-char *_lookahead(); // Funcao que retorna o valor do proximo token sem consumi-lo.
-char *_match(char *token); // Funcao que retorna o valor do proximo simbolo token consumindo-o.
-bool _matchAny(char *check); // Funcao que verifica se o valor do proximo simbolo lexico se iguala a qualquer um dos simbolos passados no argumento check como um array de simbolos.
-
-// Funcoes do analisador sintatico
-bool letra(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <letra>
-bool digito(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <digito>
-bool numero(bool write,bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <numero>
-bool boolean(bool write,bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <boolean>
-bool identificador(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <identificador>
-bool variavel(bool write,bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <variavel>
-bool fator(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <fator>
-bool expressao_simples(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <expressao simples>
-bool relacao(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <relacao>
-bool expressao(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <expressao>
-bool comando_repetitivo(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <comando repetitivo>
-bool comando_condicional(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <comando condicional>
-bool lista_de_parametros(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <lista de paremtros>
-bool chamada_de_procedimento(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <chamada de procedimento>
-bool atribuicao(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <atribuicao>
-bool comando(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <comando>
-bool comando_composto(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <comando composto>
-bool parametro_formal(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <paremetro formal>
-bool parametros_formais(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <parametros formais>
-bool declaracao_de_procedimento(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <declaracao de procedimento>
-bool parte_de_declaracoes_de_subrotinas(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <parte de declaracoes de subrotinas>
-bool lista_de_identificadores(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <lista de identificadores>
-bool tipo(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <tipo>
-bool declaracao_de_variaveis(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <declaracao de variaveis>
-bool parte_de_declaracoes_de_variaveis(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <parte de declaracoes de variaveis>
-bool bloco(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <bloco>
-bool programa(bool write, bool error); // Funcao que verifica se a proxima sequencia sintatica existente equivale a <programa>
-
-// Argumentos: bool write, bool error
-// bool write -> Define se o token sera escrito em caso de sucesso.
-// bool error -> Define se o token sera escrito em caso de erro.
-// Esta opcao e util por que muitas vezes um token e parte para gerar outro token, e portanto ele nao deve ser escrito.
+int i_tokens = -1;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// FUNCOES DO ANALISADOR //////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Funcao que le o arquivo
-char * _lerCodigo(char *nome) {
+char * lerCodigo(char *nome) {
     FILE *arquivo = fopen(nome, "r");
     char *codigo;
     size_t n = 0;
@@ -115,7 +79,7 @@ int countLines(char *nome) {
 	return lines;
 }
 
-char ** _lerTokens(char *nome) {
+char ** lerTokens(char *nome) {
 	n_tokens = countLines(nome);
     FILE *arquivo = fopen(nome, "r");
 	size_t n = 0;
@@ -145,7 +109,7 @@ char ** _lerTokens(char *nome) {
 }
 
 // Funcao que escreve no arquivo
-void _escrever(char *nome, char *texto)
+void escrever(char *nome, char *texto)
 {
 	FILE *arquivo = fopen(nome, "a");
 
@@ -153,7 +117,7 @@ void _escrever(char *nome, char *texto)
 	fclose(arquivo);
 }
 
-void _limpar(char *nome)
+void limpar(char *nome)
 {
 	FILE *arquivo = fopen(nome, "w");
 
@@ -161,31 +125,72 @@ void _limpar(char *nome)
 	fclose(arquivo);
 }
 
+char* deleteLastChar(char* word)
+{
+    int i = 0;
+    while(word[i] != '\0')
+    {
+        i++;
+         
+    }
+    word[i-1] = '\0';
+    return word;
+}
+
 // Funcao que retorna o valor do proximo token sem consumi-lo.
-char *_lookahead(){
+char *lookahead(){
 	return tokens[i_tokens+1];
 }
 
-// Funcao que retorna o valor do proximo token consumindo-o.
-char *_match(char *token){
-	if (_lookahead() == token) {
-		return tokens[++i_tokens];
-	} else {
-		char * aux = (char *) malloc(255 * sizeof(char));
-		sprintf(aux, "ERRO SINTATICO,%s\n", token);
-		printf("%s",aux);
-		return aux;
+
+char **split(char *string, int *num, char *sep)
+{
+	char *pch;
+	char **out = 0;
+	int i = 0;
+	pch = strtok(string, sep);
+
+	while (pch != 0)
+	{
+		out = realloc(out, (i + 1) * sizeof(char *));
+		out[i] = malloc(strlen(pch) + 1);
+		strcpy(out[i], pch);
+		++i;
+		pch = strtok(NULL, sep);
 	}
+	*num = i;
+	return out;
 }
 
+// Funcao que retorna o valor do proximo token consumindo-o.
+bool match(char *token){
+	int num;
+	char * aux = (char *) malloc(255 * sizeof(char));
+	char **spt = split(lookahead(), &num, ",");
+	if (strcmp(token, spt[0]) == 0) {
+		if (num > 1) {
+			sprintf(aux, "%s,%s\n", spt[0], spt[1]);
+		} else {
+			sprintf(aux, "%s\n", spt[0]);
+		}
+		escrever(SINTATICO, aux);
+		printf("%s",aux);
+		i_tokens++;
+		return true;
+	} else {
+		sprintf(aux, "ERRO SINTATICO,%s\n", token);
+		printf("%s",aux);
+		return false;
+	}
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// ANALISADOR LEXICO //////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Funcao do analisador lexico
-int analisadorLexico(char *input, char *output){
-	_limpar(output);
-	char *codigo = _lerCodigo(input);
+bool analisadorLexico(char *input, char *output){
+	limpar(output);
+	char *codigo = lerCodigo(input);
 	char *palavra = (char *)malloc(255 * sizeof(char));
 	printf("PROGRAMA LIDO (Espacos extras, tabs e enters sao ignorados):\n\n%s\n\n\n", codigo);
 	printf("GERANDO TOKENS:\n\n");
@@ -303,11 +308,13 @@ q0:
 		i++;
 		goto q158;
 	} else if (i == strlen(codigo)) {
-		return 0;
+		return true;
 	} else {
-		printf("ERRO LEXICO\n");
-		_escrever(output, "ERRO LEXICO\n");
-		return -1;
+		char * aux = (char *) malloc(255 * sizeof(char));
+		sprintf(aux, "ERRO LEXICO,%s\n", deleteLastChar(palavra));
+		printf("%s",aux);
+		escrever(output, aux);
+		return false;
 	}
 q1:
 	palavra[j++] = codigo[i];
@@ -373,7 +380,7 @@ q9:
 	if (codigo[i] == ' ') {
 		sprintf(palavra, "%s\n", palavra);
 		printf("%s",palavra);
-		_escrever(output, palavra);
+		escrever(output, palavra);
 		i++;
 		goto q0;
 	} else {
@@ -707,13 +714,15 @@ q119:
 		char * aux = (char *) malloc(255 * sizeof(char));
 		sprintf(aux, "numero,%s\n", palavra);
 		printf("%s",aux);
-		_escrever(output, aux);
+		escrever(output, aux);
 		i++;
 		goto q0;
 	} else {
-		printf("ERRO LEXICO\n");
-		_escrever(output, "ERRO LEXICO\n");
-		return -1;
+		char * aux = (char *) malloc(255 * sizeof(char));
+		sprintf(aux, "ERRO LEXICO,%s\n", deleteLastChar(palavra));
+		printf("%s",aux);
+		escrever(output, aux);
+		return false;
 	}
 q121:
 	palavra[j++] = codigo[i];
@@ -752,13 +761,15 @@ q129:
 	if (codigo[i] == ' ') {
 		sprintf(palavra, "%s\n", palavra);
 		printf("%s",palavra);
-		_escrever(output, palavra);
+		escrever(output, palavra);
 		i++;
 		goto q0;
 	} else {
-		printf("ERRO LEXICO\n");
-		_escrever(output, "ERRO LEXICO\n");
-		return -1;
+		char * aux = (char *) malloc(255 * sizeof(char));
+		sprintf(aux, "ERRO LEXICO,%s\n", deleteLastChar(palavra));
+		printf("%s",aux);
+		escrever(output, aux);
+		return false;
 	}
 q157:
 	palavra[j++] = codigo[i];
@@ -766,9 +777,11 @@ q157:
 		i++;
 		goto q129;
 	} else {
-		printf("ERRO LEXICO\n");
-		_escrever(output, "ERRO LEXICO\n");
-		return -1;
+		char * aux = (char *) malloc(255 * sizeof(char));
+		sprintf(aux, "ERRO LEXICO,%s\n", deleteLastChar(palavra));
+		printf("%s",aux);
+		escrever(output, aux);
+		return false;
 	}
 q158:
 	palavra[j++] = codigo[i];
@@ -776,9 +789,11 @@ q158:
 		i++;
 		goto q129;
 	} else {
-		printf("ERRO LEXICO\n");
-		_escrever(output, "ERRO LEXICO\n");
-		return -1;
+		char * aux = (char *) malloc(255 * sizeof(char));
+		sprintf(aux, "ERRO LEXICO,%s\n", deleteLastChar(palavra));
+		printf("%s",aux);
+		escrever(output, aux);
+		return false;
 	}
 q89:
 	palavra[j++] = codigo[i];
@@ -993,13 +1008,15 @@ q117:
 		char * aux = (char *) malloc(255 * sizeof(char));
 		sprintf(aux, "identificador,%s\n", palavra);
 		printf("%s",aux);
-		_escrever(output, aux);
+		escrever(output, aux);
 		i++;
 		goto q0;
 	} else {
-		printf("ERRO LEXICO\n");
-		_escrever(output, "ERRO LEXICO\n");
-		return -1;
+		char * aux = (char *) malloc(255 * sizeof(char));
+		sprintf(aux, "ERRO LEXICO,%s\n", deleteLastChar(palavra));
+		printf("%s",aux);
+		escrever(output, aux);
+		return false;
 	}
 q133:
 	palavra[j++] = codigo[i];
@@ -1012,13 +1029,15 @@ q133:
 	} else if (codigo[i] == ' ') {
 		sprintf(palavra, "%s\n", palavra);
 		printf("%s",palavra);
-		_escrever(output, palavra);
+		escrever(output, palavra);
 		i++;
 		goto q0;
 	} else {
-		printf("ERRO LEXICO\n");
-		_escrever(output, "ERRO LEXICO\n");
-		return -1;
+		char * aux = (char *) malloc(255 * sizeof(char));
+		sprintf(aux, "ERRO LEXICO,%s\n", deleteLastChar(palavra));
+		printf("%s",aux);
+		escrever(output, aux);
+		return false;
 	}
 q134:
 	palavra[j++] = codigo[i];
@@ -1028,13 +1047,15 @@ q134:
 	} else if (codigo[i] == ' ') {
 		sprintf(palavra, "%s\n", palavra);
 		printf("%s",palavra);
-		_escrever(output, palavra);
+		escrever(output, palavra);
 		i++;
 		goto q0;
 	} else {
-		printf("ERRO LEXICO\n");
-		_escrever(output, "ERRO LEXICO\n");
-		return -1;
+		char * aux = (char *) malloc(255 * sizeof(char));
+		sprintf(aux, "ERRO LEXICO,%s\n", deleteLastChar(palavra));
+		printf("%s",aux);
+		escrever(output, aux);
+		return false;
 	}
 q135:
 	palavra[j++] = codigo[i];
@@ -1044,51 +1065,22 @@ q135:
 	} else if (codigo[i] == ' ') {
 		sprintf(palavra, "%s\n", palavra);
 		printf("%s",palavra);
-		_escrever(output, palavra);
+		escrever(output, palavra);
 		i++;
 		goto q0;
 	} else {
-		printf("ERRO LEXICO\n");
-		_escrever(output, "ERRO LEXICO\n");
-		return -1;
+		char * aux = (char *) malloc(255 * sizeof(char));
+		sprintf(aux, "ERRO LEXICO,%s\n", deleteLastChar(palavra));
+		printf("%s",aux);
+		escrever(output, aux);
+		return false;
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// ANALISADOR SINTATICO ///////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /*
-// Funcao que verifica se a proxima sequencia sintatica existente equivale a <letra>
-bool letra(bool write, bool error){
-	if (_matchAny("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")){
-		if (write) {
-			printf("<letra> ");
-			_escrever(SAIDA, "<letra> ");
-		}
-		return true;
-	} else if (error) {
-   		printf("<ERRO SINTATICO,letra> ");
-		_escrever(SAIDA, "<ERRO SINTAXE,letra> ");
-	}
-	return false;
-}
-
-// Funcao que verifica se a proxima sequencia sintatica existente equivale a <digito>
-bool digito(bool write, bool error){
-	if (_matchAny("0123456789")){
-		if (write) {
-			printf("<digito> ");
-			_escrever(SAIDA, "<digito> ");
-		}
-		return true;
-	} else if (error) {
-   		printf("<ERRO SINTATICO,digito> ");
-		_escrever(SAIDA, "<ERRO SINTAXE,digito> ");
-	}
-	return false;
-}
-
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <numero>
 bool numero(bool write,bool error){
 	bool ultima = false;
@@ -1097,22 +1089,22 @@ bool numero(bool write,bool error){
 	strcpy(token, "<numero,");
 	size_t len = strlen(token);
 	numero_digito: 
-	if (_lookahead() == ' ') {
+	if (lookahead() == ' ') {
 		ultima = true;
 	}
 	if (ultima){
-		if (_match() == ' ') {
+		if (match(' ')) {
 			if (write) {
 				token[len++] = '>';
 				token[len++] = ' ';
 				printf("%s", token);
-				_escrever(SAIDA, token);
+				escrever(SAIDA, token);
 			}
 			return true;
 		} else {
 			if (error) {
 	  			printf("<ERRO SINTATICO,numero> ");
-				_escrever(SAIDA, "<ERRO SINTATICO,numero> ");
+				escrever(SAIDA, "<ERRO SINTATICO,numero> ");
 			}
 			return false;
 			}
@@ -1129,18 +1121,18 @@ bool boolean(bool write,bool error){
 	if (verdadeiro(false, false)) {
 		if (write) {
 			printf("<bool,verdadeiro> ");
-			_escrever(SAIDA, "<bool,verdadeiro> ");
+			escrever(SAIDA, "<bool,verdadeiro> ");
 		}
 		return true;
 	} else if (falso(false, false)) {
 		if (write) {
 			printf("<bool,falso> ");
-			_escrever(SAIDA, "<bool,falso> ");
+			escrever(SAIDA, "<bool,falso> ");
 		}
 		return true;
 	} else if (error) {
    		printf("<ERRO SINTATICO,bool> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,bool> ");
+		escrever(SAIDA, "<ERRO SINTATICO,bool> ");
 	}
 	return false;
 }
@@ -1156,22 +1148,22 @@ bool identificador(bool write, bool error){
 	strcpy(token, "<identificador,");
 	size_t len = strlen(token);
 	ident_letra: 
-	if (_lookahead() == ' ') {
+	if (lookahead() == ' ') {
 		ultima = true;
 	}
 	if (ultima){
-		if (_match() == ' ') {
+		if (match() == ' ') {
 			if (write) {
 				token[len++] = '>';
 				token[len++] = ' ';
 				printf("%s", token);
-				_escrever(SAIDA, token);
+				escrever(SAIDA, token);
 			}
 			return true;
 		} else {
 			if (error) {
 	  			printf("<ERRO SINTATICO,identificador> ");
-				_escrever(SAIDA, "<ERRO SINTATICO,identificador> ");
+				escrever(SAIDA, "<ERRO SINTATICO,identificador> ");
 			}
 			return false;
 			}
@@ -1188,12 +1180,12 @@ bool variavel(bool write,bool error){
 	if (identificador(true,false)) {
 		if (write) {
 			printf("<variavel> ");
-			_escrever(SAIDA, "<variavel> ");
+			escrever(SAIDA, "<variavel> ");
 		}
 		return true;
 	} else if (error) {
    		printf("<ERRO SINTATICO,variavel> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,variavel> ");
+		escrever(SAIDA, "<ERRO SINTATICO,variavel> ");
 	}
 	return false;
 }
@@ -1203,13 +1195,13 @@ bool fator(bool write, bool error){
 	if (numero(true,false)) {
 		if (write) {
 			printf("<fator,numero> ");
-			_escrever(SAIDA, "<fator,numero> ");
+			escrever(SAIDA, "<fator,numero> ");
 		}
 		return true;
 	} else if (boolean(true,false)) {
 		if (write) {
 			printf("<fator,boolean> ");
-			_escrever(SAIDA, "<fator,boolean> ");
+			escrever(SAIDA, "<fator,boolean> ");
 		}
 		return true;
 	} else if (parenteses_esquerda(true,false)) {
@@ -1217,7 +1209,7 @@ bool fator(bool write, bool error){
 			if (parenteses_direita(true,false)) {
 				if (write) {
 					printf("<fator,expressao simples> ");
-					_escrever(SAIDA, "<fator,expressao simples> ");
+					escrever(SAIDA, "<fator,expressao simples> ");
 				}
 				return true;
 			}
@@ -1225,13 +1217,13 @@ bool fator(bool write, bool error){
 	} else if (variavel(false,false)) {
 		if (write) {
 			printf("<fator,variavel> ");
-			_escrever(SAIDA, "<fator,variavel> ");
+			escrever(SAIDA, "<fator,variavel> ");
 		}
 		return true;
 	}
 	if (error) {
    		printf("<ERRO SINTATICO,fator> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,fator> ");
+		escrever(SAIDA, "<ERRO SINTATICO,fator> ");
 	}
 	return false;
 }
@@ -1246,14 +1238,14 @@ bool termo(bool write, bool error){
 		} else {
 			if (write) {
 				printf("<termo> ");
-				_escrever(SAIDA, "<termo> ");
+				escrever(SAIDA, "<termo> ");
 			}
 			return true;
 		}
 	} 
    	if (error) {
 		printf("<ERRO SINTATICO,termo> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,termo> ");
+		escrever(SAIDA, "<ERRO SINTATICO,termo> ");
 	}
 	return false;
 }
@@ -1281,13 +1273,13 @@ bool expressao_simples(bool write, bool error){
 	if (tem_um){
 		if (write) {
 			printf("<expressao simples> ");
-			_escrever(SAIDA, "<expressao simples> ");
+			escrever(SAIDA, "<expressao simples> ");
 		}
 		return true;
 	} else {
 		if (error) {
 			printf("<ERRO SINTATICO,expressao simples> ");
-			_escrever(SAIDA, "<ERRO SINTATICO,expressao simples> ");
+			escrever(SAIDA, "<ERRO SINTATICO,expressao simples> ");
 		}
 		return false;
 	}
@@ -1298,43 +1290,43 @@ bool relacao(bool write, bool error){
 	if (relacao_igual(false,false)){
 		if (write) {
 			printf("<relacao,eq> ");
-			_escrever(SAIDA, "<relacao,eq> ");
+			escrever(SAIDA, "<relacao,eq> ");
 		}
 		return true;
 	} else if (relacao_menor(false,false)) {
 		if (write) {
 			printf("<relacao,sm> ");
-			_escrever(SAIDA, "<relacao,sm> ");
+			escrever(SAIDA, "<relacao,sm> ");
 		}
 		return true;
 	} else if (relacao_maior(false,false)) {
 		if (write) {
 			printf("<relacao,bg> ");
-			_escrever(SAIDA, "<relacao,bg> ");
+			escrever(SAIDA, "<relacao,bg> ");
 		}
 		return true;
 	} else if (relacao_menor_igual(false,false)) {
 		if (write) {
 			printf("<relacao,smeq> ");
-			_escrever(SAIDA, "<relacao,smeq> ");
+			escrever(SAIDA, "<relacao,smeq> ");
 		}
 		return true;
 	} else if (relacao_maior_igual(false,false)) {
 		if (write) {
 			printf("<relacao,bgeq> ");
-			_escrever(SAIDA, "<relacao,bgeq> ");
+			escrever(SAIDA, "<relacao,bgeq> ");
 		}
 		return true;
 	} else if (relacao_diferente(false,false)) {
 		if (write) {
 			printf("<relacao,dif> ");
-			_escrever(SAIDA, "<relacao,dif> ");
+			escrever(SAIDA, "<relacao,dif> ");
 		}
 		return true;
 	} else {
 		if (error) {
 			printf("<ERRO SINTATICO,relacao> ");
-			_escrever(SAIDA, "<ERRO SINTATICO,relacao> ");
+			escrever(SAIDA, "<ERRO SINTATICO,relacao> ");
 		}
 		return false;
 	}
@@ -1349,14 +1341,14 @@ bool expressao(bool write, bool error){
 		} else {
 			if (write) {
 				printf("<expressao> ");
-				_escrever(SAIDA, "<expressao> ");
+				escrever(SAIDA, "<expressao> ");
 			}
 			return true;
 		}
 	} else {
 		if (error) {
 			printf("<ERRO SINTATICO,expressao> ");
-			_escrever(SAIDA, "<ERRO SINTATICO,expressao> ");
+			escrever(SAIDA, "<ERRO SINTATICO,expressao> ");
 		}
 		return false;
 	}
@@ -1373,7 +1365,7 @@ bool comando_repetitivo(bool write, bool error){
 							if (fimenquanto(true,false)) {
 								if (write) {
    									printf("<comando repetitivo> ");
-									_escrever(SAIDA, "<comando repetitivo> ");
+									escrever(SAIDA, "<comando repetitivo> ");
 								}
 								return true;
 							}
@@ -1385,7 +1377,7 @@ bool comando_repetitivo(bool write, bool error){
 	}
 	if (error) {
    		printf("<ERRO SINTATICO,comando repetitivo> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,comando repetitivo> ");
+		escrever(SAIDA, "<ERRO SINTATICO,comando repetitivo> ");
 	}
 	return false;
 }
@@ -1402,7 +1394,7 @@ bool comando_condicional(bool write, bool error){
 								if (!comando_composto(false,false)){
 									if (error) {
 		   								printf("<ERRO SINTATICO,comando condicional> ");
-										_escrever(SAIDA, "<ERRO SINTATICO,comando condicional> ");
+										escrever(SAIDA, "<ERRO SINTATICO,comando condicional> ");
 									}
 									return false;
 								}	
@@ -1410,7 +1402,7 @@ bool comando_condicional(bool write, bool error){
 							if (fimse(true,false)) {
 								if (write) {
    									printf("<comando condicional> ");
-									_escrever(SAIDA, "<comando condicional> ");
+									escrever(SAIDA, "<comando condicional> ");
 								}
 								return true;
 							}
@@ -1422,7 +1414,7 @@ bool comando_condicional(bool write, bool error){
 	}
 	if (error) {
    		printf("<ERRO SINTATICO,comando condicional> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,comando condicional> ");
+		escrever(SAIDA, "<ERRO SINTATICO,comando condicional> ");
 	}
 	return false;
 }
@@ -1436,7 +1428,7 @@ bool lista_de_parametros(bool write, bool error){
 			} else if (parenteses_direita(true,false)) {
 				if (write) {
    					printf("<lista de parametros> ");
-					_escrever(SAIDA, "<lista de parametros> ");
+					escrever(SAIDA, "<lista de parametros> ");
 				}
 				return true;
 			}
@@ -1444,7 +1436,7 @@ bool lista_de_parametros(bool write, bool error){
 	}
 	if (error) {
    		printf("<ERRO SINTATICO,lista de parametros> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,lista de parametros> ");
+		escrever(SAIDA, "<ERRO SINTATICO,lista de parametros> ");
 	}
 	return false;
 }
@@ -1456,13 +1448,13 @@ bool chamada_de_procedimento(bool write, bool error){
 		(ponto_e_virgula(true,false))) {
 		if (write) {
    			printf("<chamada de procedimento> ");
-			_escrever(SAIDA, "<chamada de procedimento> ");
+			escrever(SAIDA, "<chamada de procedimento> ");
 		}
 		return true;
 	}
 	if (error) {
    		printf("<ERRO SINTATICO,chamada de procedimento> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,chamada de procedimento> ");
+		escrever(SAIDA, "<ERRO SINTATICO,chamada de procedimento> ");
 	}
 	return false;
 }
@@ -1475,7 +1467,7 @@ bool atribuicao(bool write, bool error){
 				if (ponto_e_virgula(true,false)) {
 					if (write) {
 			   			printf("<atribuicao> ");
-						_escrever(SAIDA, "<atribuicao> ");
+						escrever(SAIDA, "<atribuicao> ");
 					}
 					return true;
 				}
@@ -1484,7 +1476,7 @@ bool atribuicao(bool write, bool error){
 	}
 	if (error) {
 		printf("<ERRO SINTATICO,atribuicao> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,atribuicao> ");
+		escrever(SAIDA, "<ERRO SINTATICO,atribuicao> ");
 	}
 	return false;
 }
@@ -1498,7 +1490,7 @@ bool comando(bool write, bool error){
 					if (ponto_e_virgula(true,false)) {
 						if (write) {
 	  							printf("<comando,escreva> ");
-							_escrever(SAIDA, "<comando,escreva> ");
+							escrever(SAIDA, "<comando,escreva> ");
 						}
 						return true;
 					}
@@ -1508,31 +1500,31 @@ bool comando(bool write, bool error){
 	} else if (comando_repetitivo(false,false)) {
 			if (write) {
 	  			printf("<comando,repetitivo> ");
-			_escrever(SAIDA, "<comando,repetitivo> ");
+			escrever(SAIDA, "<comando,repetitivo> ");
 		}
 		return true;
 	} else if (comando_condicional(false,false)) {
 		if (write) {
 	  			printf("<comando,condicional> ");
-			_escrever(SAIDA, "<comando,condicional> ");
+			escrever(SAIDA, "<comando,condicional> ");
 		}
 		return true;
 	} else if (atribuicao(false,false)) {
 		if (write) {
    			printf("<comando,atribuicao> ");
-			_escrever(SAIDA, "<comando,atribuicao> ");
+			escrever(SAIDA, "<comando,atribuicao> ");
 		}
 		return true;
 	} else if (chamada_de_procedimento(false,false)){
 		if (write) {
 	  			printf("<comando,chamada de procedimento> ");
-			_escrever(SAIDA, "<comando,chamada de procedimento> ");
+			escrever(SAIDA, "<comando,chamada de procedimento> ");
 		}
 		return true;
 	}	
 	if (error) {
    		printf("<ERRO SINTATICO,comando> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,comando> ");
+		escrever(SAIDA, "<ERRO SINTATICO,comando> ");
 	}
 	return false;
 }
@@ -1545,19 +1537,19 @@ bool comando_composto(bool write, bool error){
 		if (!ponto_e_virgula(true,false)) {
 			if (error) {
    				printf("<ERRO SINTATICO,comando composto> ");
-				_escrever(SAIDA, "<ERRO SINTATICO,comando composto> ");
+				escrever(SAIDA, "<ERRO SINTATICO,comando composto> ");
 			}
 		}
 	}
 	if (tem_um) {
 		if (write) {
 	   		printf("<comando composto> ");
-			_escrever(SAIDA, "<comando composto> ");
+			escrever(SAIDA, "<comando composto> ");
 		}
 		return true;
 	} else if (error) {
    		printf("<ERRO SINTATICO,comando composto> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,comando composto> ");
+		escrever(SAIDA, "<ERRO SINTATICO,comando composto> ");
 	}
 	return false;
 }
@@ -1569,14 +1561,14 @@ bool parametro_formal(bool write, bool error){
 		if (identificador(true,false)) {
 			if (write) {
 	   			printf("<parametro formal> ");
-				_escrever(SAIDA, "<parametro formal> ");
+				escrever(SAIDA, "<parametro formal> ");
 			}
 			return true;
 		}
 	}
 	if (error) {
    		printf("<ERRO SINTATICO,parametro formal> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,parametro formal> ");
+		escrever(SAIDA, "<ERRO SINTATICO,parametro formal> ");
 	}
 	return false;
 }
@@ -1590,7 +1582,7 @@ bool parametros_formais(bool write, bool error){
 	}
 	if (write) {
 		printf("<parametros formais> ");
-		_escrever(SAIDA, "<parametros formais> ");
+		escrever(SAIDA, "<parametros formais> ");
 	}
 	return true;
 }
@@ -1603,12 +1595,12 @@ bool declaracao_de_procedimento(bool write, bool error){
 			if ((parametros_formais(false,false)) &&
 				(parenteses_direita(true,false))) {
 				printf("\n");
-				_escrever(SAIDA, "\n");
+				escrever(SAIDA, "\n");
 				if (bloco(false,false)) {
 					if (fimprocedimento(true,false)) {
 						if (write) {
 				   			printf("<declaracao de procedimento> ");
-							_escrever(SAIDA, "<declaracao de procedimento> ");
+							escrever(SAIDA, "<declaracao de procedimento> ");
 						}
 						return true;
 					}
@@ -1618,7 +1610,7 @@ bool declaracao_de_procedimento(bool write, bool error){
 	}
 	if (error) {
    		printf("<ERRO SINTATICO,declaracao de procedimento> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,declaracao de procedimento> ");
+		escrever(SAIDA, "<ERRO SINTATICO,declaracao de procedimento> ");
 	}
 	return false;
 }
@@ -1629,14 +1621,14 @@ bool parte_de_declaracoes_de_subrotinas(bool write, bool error){
 		if (!ponto_e_virgula(true,false)) {
 			if (error) {
    				printf("<ERRO SINTATICO,parte de declaracao de subrotinas> ");
-				_escrever(SAIDA, "<ERRO SINTATICO,parte de declaracao de subrotinas> ");
+				escrever(SAIDA, "<ERRO SINTATICO,parte de declaracao de subrotinas> ");
 			}
 			return false;
 		}
 	} 
 	if (write) {
 		printf("<parte de declaracao de subrotinas> ");
-		_escrever(SAIDA, "<parte de declaracao de subrotinas> ");
+		escrever(SAIDA, "<parte de declaracao de subrotinas> ");
 	}
 	return true;
 }
@@ -1654,14 +1646,14 @@ bool lista_de_identificadores(bool write, bool error){
 		} else {
 			if (write) {
 		   		printf("<lista de identificadores> ");
-				_escrever(SAIDA, "<lista de identificadores> ");
+				escrever(SAIDA, "<lista de identificadores> ");
 			}
 			return true;
 		}
 	} 
 	if (error) {
    		printf("<ERRO SINTATICO,lista de identificadores> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,lista de identificadores> ");
+		escrever(SAIDA, "<ERRO SINTATICO,lista de identificadores> ");
 	}
 	return false;
 }
@@ -1671,18 +1663,18 @@ bool tipo(bool write, bool error){
 	if (inteiro(false,false)) {
 		if (write) {
 			printf("<tipo,inteiro> ");
-			_escrever(SAIDA, "<tipo,inteiro> ");
+			escrever(SAIDA, "<tipo,inteiro> ");
 		}
 		return true;
 	} else if (booleano(false,false)) {
 		if (write) {
 			printf("<tipo,booleano> ");
-			_escrever(SAIDA, "<tipo,booleano> ");
+			escrever(SAIDA, "<tipo,booleano> ");
 		}
 		return true;
 	} else if (error) {
    		printf("<ERRO SINTATICO,tipo> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,tipo> ");
+		escrever(SAIDA, "<ERRO SINTATICO,tipo> ");
 	}
 	return false;
 }
@@ -1695,14 +1687,14 @@ bool declaracao_de_variaveis(bool write, bool error){
 			(ponto_e_virgula(true,false))) {
 			if (write) {
 		  		printf("<declaracao de variaveis> ");
-				_escrever(SAIDA, "<declaracao de variaveis> ");
+				escrever(SAIDA, "<declaracao de variaveis> ");
 			}
 			return true;
 		}
 	}
 	if (error) {
    		printf("<ERRO SINTATICO,declaracao de variaveis> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,declaracao de variaveis> ");
+		escrever(SAIDA, "<ERRO SINTATICO,declaracao de variaveis> ");
 	}
 	return false;
 }
@@ -1716,13 +1708,13 @@ bool parte_de_declaracoes_de_variaveis(bool write, bool error){
 	if (tem_um){
 		if (write) {
 			printf("<parte de declaracao de variaveis> ");
-			_escrever(SAIDA, "<parte de declaracao de variaveis> ");
+			escrever(SAIDA, "<parte de declaracao de variaveis> ");
 		}
 		return true;
 	}else {
 		if (error) {
    			printf("<ERRO SINTATICO,parte de declaracao de variaveis> ");
-			_escrever(SAIDA, "<ERRO SINTATICO,parte de declaracao de variaveis> ");
+			escrever(SAIDA, "<ERRO SINTATICO,parte de declaracao de variaveis> ");
 		}
 		return false;
 	}
@@ -1730,46 +1722,35 @@ bool parte_de_declaracoes_de_variaveis(bool write, bool error){
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <bloco>
 bool bloco(bool write, bool error){
-	parte_de_declaracoes_de_variaveis(false,false);
-	parte_de_declaracoes_de_subrotinas(false,false);
+	parte_de_declaracoes_de_variaveis();
+	parte_de_declaracoes_de_subrotinas();
 	if (comando_composto(false,false)) {
 		if (write) {
 			printf("<bloco> ");
-			_escrever(SAIDA, "<bloco> ");
+			escrever(SAIDA, "<bloco> ");
 		}
 		return true;
 	} else {
 		if (error) {
 			printf("<ERRO SINTATICO,bloco> ");
-			_escrever(SAIDA, "<ERRO SINTATICO,bloco> ");
+			escrever(SAIDA, "<ERRO SINTATICO,bloco> ");
 		}
 		return true;
 	}
 }
 
+*/
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <programa>
 bool programa(){
-	if (palavra_programa(true,false)) {
-		if (identificador(true,false)) {
-			printf("\n");
-			_escrever(SAIDA, "\n");
-			if ((bloco(false,false)) &&
-				(fimprograma(true,false))) {
-				if (write) {
-   					printf("<programa> ");
-					_escrever(SAIDA, "<programa> ");
-				}
+	if (match("programa")) {
+		if (match("identificador")) {
+			//if ((bloco())) {
 				return true;
-			}
+			//}
 		}
-	}
-	if (error) {
-   		printf("<ERRO SINTATICO,programa> ");
-		_escrever(SAIDA, "<ERRO SINTATICO,programa> ");
 	}
 	return false;
 }
-*/
 
 void printTokens() {
 	int i;
@@ -1778,11 +1759,14 @@ void printTokens() {
 	}
 }
 
-int analisadorSintatico(char *input, char *output){
+bool analisadorSintatico(char *input, char *output){
+	limpar(output);
 	printf("\n\n\nINICIANDO ANALISE SINTATICA\n");
-	tokens = _lerTokens(input);
+	tokens = lerTokens(input);
 	printf("\nTOKENS LIDOS:\n\n");
 	printTokens();
+	printf("\nGERANDO TOKENS:\n\n");
+	return programa();
 }
 
 void alunosResponsaveis(){
@@ -1794,10 +1778,11 @@ void alunosResponsaveis(){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////");
 }
 
-// Funcao main que chama a funcao programa para inicializar a analise lexica e sintetica.
+// Funcao main que chama a funcao programa para inicializar a analise lexica e sintatica.
 int main(){
-	analisadorLexico("MiniAlg.txt", "Lexicos.txt");
-	analisadorSintatico("Lexicos.txt", "Sintaticos.txt");
+	if (analisadorLexico(MINIALG, LEXICO)) {
+		analisadorSintatico(LEXICO, SINTATICO);
+	}
 	alunosResponsaveis();
 	return 0;
 }
