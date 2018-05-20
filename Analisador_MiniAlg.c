@@ -28,10 +28,26 @@
 #define LEXICO "Lexico.txt"
 #define SINTATICO "Sintatico.txt"
 
+// Declara structs necessarias
+
+typedef struct Variavel
+{
+	char *identificador;
+	char *tipo;
+} Variavel;
+
+typedef struct Escopo
+{
+	int i;
+	struct Escopo *parente;
+	struct Variavel **variaveis;
+} Escopo;
+
 // Declara variaveis globais necessarias
 char **tokens;
 int n_tokens;
 int i_tokens = -1;
+Escopo *escopo = NULL;
 
 // Declara funcoes que precisam ser declaradas
 bool expressao_simples();
@@ -39,7 +55,7 @@ bool comando_composto();
 bool bloco();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////// FUNCOES DO ANALISADOR //////////////////////////////////////////
+////////////////////////////////////// FUNCOES DE LEITURA DE ARQUIVO //////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Funcao que le o arquivo do codigo
@@ -85,6 +101,19 @@ int countLines(char *nome) {
 	}
 	fclose(arquivo);
 	return lines;
+}
+
+// Funcao que deleta o ultimo char de um char*
+char* deleteLastChar(char* word)
+{
+    int i = 0;
+    while(word[i] != '\0')
+    {
+        i++;
+         
+    }
+    word[i-1] = '\0';
+    return word;
 }
 
 // Funcao que le o arquivo de tokens
@@ -133,92 +162,6 @@ void limpar(char *nome)
 
 	fprintf(arquivo, "");
 	fclose(arquivo);
-}
-
-// Funcao que deleta o ultimo char de um char*
-char* deleteLastChar(char* word)
-{
-    int i = 0;
-    while(word[i] != '\0')
-    {
-        i++;
-         
-    }
-    word[i-1] = '\0';
-    return word;
-}
-
-// Divide um token dado um separador, no caso ,
-char **splitToken(char *string, int *num, char *sep)
-{
-	char *pch;
-	char **out = 0;
-	int i = 0;
-	if (strcmp(string,sep) != 0) {
-		pch = strtok(string, sep);
-
-		while (pch != 0)
-		{
-			out = realloc(out, (i + 1) * sizeof(char *));
-			out[i] = malloc(strlen(pch) + 1);
-			strcpy(out[i], pch);
-			++i;
-			pch = strtok(NULL, sep);
-		}
-		if (i > 1) {
-			sprintf(string, "%s,%s", out[0], out[1]);
-		} else {
-			sprintf(string, "%s", out[0]);
-		}
-	} else {
-		out = realloc(out, (i + 1) * sizeof(char *));
-		out[i] = malloc(strlen(sep) + 1);
-		strcpy(out[i], sep);
-		++i;
-	}
-	*num = i;
-	return out;
-}
-
-// Funcao que verifica o proximo token sem consumi-lo.
-bool lookahead(char *token){
-	int num = 0;
-	char *tk = tokens[i_tokens+1];
-	char **spt = splitToken(tk, &num, ",");
-	if (strcmp(tk,token) == 0) {
-		spt[0] = tk;
-	}
-	if (strcmp(token, spt[0]) == 0) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-// Funcao que verifica o proximo token consumindo-o.
-bool match(char *token){
-	int num = 0;
-	char *tk = tokens[i_tokens+1];
-	char * aux = (char *) malloc(255 * sizeof(char));
-	char **spt = splitToken(tk, &num, ","); // Tratamento para argumentos do token Ex: "identificador,correto" => ["identificador","correto"]
-	if (strcmp(tk,token) == 0) {
-		spt[0] = tk;
-	}
-	if (strcmp(token, spt[0]) == 0) {
-		if (num > 1) {
-			sprintf(aux, "%s,%s\n", spt[0], spt[1]);
-		} else {
-			sprintf(aux, "%s\n", spt[0]);
-		}
-		escrever(SINTATICO, aux);
-		printf("%s",aux);
-		i_tokens++;
-		return true;
-	} else {
-		sprintf(aux, "ERRO SINTATICO,%s\n", token);
-		printf("%s",aux);
-		return false;
-	}
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// ANALISADOR LEXICO //////////////////////////////////////////////
@@ -1124,9 +1067,133 @@ q164:
 	goto q164;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////// ANALISADOR SEMANTICO ///////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Funcao que verifica se uma variavel existe no escopo ou seus parentes.
+Variavel *lookup(char *identificador, char *tipo) {
+	int i;
+	Escopo *presente = escopo;
+	while(presente) {
+		for (i = 0; i < (*presente).i; i++) {
+			if ( strcmp((*(*presente).variaveis[i]).identificador,identificador) == 0 ) {
+				if ((strcmp(tipo,"") == 0) || 
+				( strcmp((*(*presente).variaveis[i]).tipo,tipo) == 0 )) {
+					return (*presente).variaveis[i];
+				}
+			}
+		}
+		presente = (*presente).parente;
+	}
+	char * aux = (char *) malloc(255 * sizeof(char));
+	sprintf(aux, "ERRO SEMANTICO,%s\n", identificador);
+	printf("%s",aux);
+	exit(-1);
+}
+
+// Funcao que cria um novo escopo
+void novoEscopo() {
+	Escopo *novo_escopo = (Escopo *) malloc(sizeof(Escopo));
+	(*novo_escopo).i = 0;
+	(*novo_escopo).parente = escopo;
+	(*novo_escopo).variaveis = (Variavel **) malloc(256 * sizeof(Variavel *));
+	escopo = novo_escopo;
+}
+
+// Funcao que encerra um escopo e retorna para seu parente
+void fimEscopo() {
+	escopo = (*escopo).parente;
+}
+
+// Funcao que adiciona uma variavel ao escopo
+void novaVariavel(char *tipo, char *identificador) {
+	(*escopo).variaveis[(*escopo).i] = (Variavel *) malloc(sizeof(Variavel));
+	(*(*escopo).variaveis[(*escopo).i]).tipo = tipo;
+	(*(*escopo).variaveis[(*escopo).i]).identificador = identificador;
+	(*escopo).i++;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// ANALISADOR SINTATICO ///////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Divide um token dado um separador, no caso ,
+char **splitToken(char *string, int *num, char *sep)
+{
+	char *pch;
+	char **out = 0;
+	int i = 0;
+	if (strcmp(string,sep) != 0) {
+		pch = strtok(string, sep);
+
+		while (pch != 0)
+		{
+			out = realloc(out, (i + 1) * sizeof(char *));
+			out[i] = malloc(strlen(pch) + 1);
+			strcpy(out[i], pch);
+			++i;
+			pch = strtok(NULL, sep);
+		}
+		if (i > 1) {
+			sprintf(string, "%s,%s", out[0], out[1]);
+		} else {
+			sprintf(string, "%s", out[0]);
+		}
+	} else {
+		out = realloc(out, (i + 1) * sizeof(char *));
+		out[i] = malloc(strlen(sep) + 1);
+		strcpy(out[i], sep);
+		++i;
+	}
+	*num = i;
+	return out;
+}
+
+// Funcao que verifica o proximo token sem consumi-lo.
+bool lookahead(char *token){
+	int num = 0;
+	char *tk = tokens[i_tokens+1];
+	char **spt = splitToken(tk, &num, ",");
+	if (strcmp(tk,token) == 0) {
+		spt[0] = tk;
+	}
+	if (strcmp(token, spt[0]) == 0) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+// Funcao que verifica o proximo token consumindo-o.
+char * match(char *token){
+	int num = 0;
+	char *tk = tokens[i_tokens+1];
+	char * aux = (char *) malloc(255 * sizeof(char));
+	char **spt = splitToken(tk, &num, ","); // Tratamento para argumentos do token Ex: "identificador,correto" => ["identificador","correto"]
+	if (strcmp(tk,token) == 0) {
+		spt[0] = tk;
+	}
+	if (strcmp(token, spt[0]) == 0) {
+		i_tokens++;
+		if (num > 1) {
+			sprintf(aux, "%s,%s\n", spt[0], spt[1]);
+			escrever(SINTATICO, aux);
+			printf("%s",aux);
+			return spt[1];
+		} else {
+			sprintf(aux, "%s\n", spt[0]);
+			escrever(SINTATICO, aux);
+			printf("%s",aux);
+			return spt[0];
+		}
+	} else {
+		sprintf(aux, "ERRO SINTATICO,%s\n", token);
+		printf("%s",aux);
+		exit(-1);
+	}
+}
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <fator>
 bool fator(){
@@ -1217,7 +1284,7 @@ bool relacao(){
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <expressao>
 bool expressao(){
-	if (expressao_simples()){
+	if (expressao_simples()){ 
 		if (relacao()) {
 			if (expressao_simples()) {
 				return true;
@@ -1339,7 +1406,8 @@ bool comando(){
 	if (lookahead("escreva")) {
 		if (match("escreva")) {
 			if (match("(")) {
-				if (match("identificador")){
+				char *identificador = match("identificador");
+				if (lookup(identificador, "")){
 					if (match(")")) {
 						if (match(";")) {
 							return true;
@@ -1373,9 +1441,12 @@ bool comando_composto(){
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <parametro formal>
 bool parametro_formal(){
-	if (match("tipo")) {
+	char *tipo = match("tipo");
+	if (tipo) {
 		if (match(":")) {
-			if (match("identificador")) {
+			char *identificador = match("identificador");
+			if (identificador) {
+				novaVariavel(tipo,identificador);
 				return true;
 			}
 		}
@@ -1406,7 +1477,9 @@ bool parametros_formais(){
 bool declaracao_de_procedimento(){
 	if (lookahead("procedimento")) {
 		match("procedimento");
-		if (match("identificador")) {
+		char *identificador = match("identificador");
+		if (identificador) {
+			novaVariavel("procedimento",identificador);
 			if (parametros_formais()) {
 				if (bloco()) {
 					if (match("fimprocedimento")) {
@@ -1428,11 +1501,14 @@ bool parte_de_declaracoes_de_subrotinas(){
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <lista de identificadores>
-bool lista_de_identificadores(){
-	if (match("identificador")){
+bool lista_de_identificadores(char *tipo){
+	char *identificador = match("identificador");
+	if (identificador){
+		novaVariavel(tipo,identificador);
 		while (lookahead(",")) {
 			match(",");
-			match("identificador");
+			identificador = match("identificador");
+			novaVariavel(tipo,identificador);
 		}
 		if (match(";")) {
 			return true;
@@ -1444,9 +1520,10 @@ bool lista_de_identificadores(){
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <declaracao de variaveis>
 bool declaracao_de_variaveis(){
 	if (lookahead("tipo")) {
-		if (match("tipo")) {
+		char *tipo = match("tipo");
+		if (tipo) {
 			if (match(":")) {
-				if (lista_de_identificadores()) {
+				if (lista_de_identificadores(tipo)) {
 					return true;
 				}
 			}
@@ -1465,13 +1542,16 @@ bool parte_de_declaracoes_de_variaveis(){
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <bloco>
 bool bloco(){
+	novoEscopo();
 	if (parte_de_declaracoes_de_variaveis()) {
 		if (parte_de_declaracoes_de_subrotinas()) {
 			if (comando_composto()) {
+				fimEscopo();
 				return true;
 			}
 		}
 	}
+	fimEscopo();
 	return false;
 }
 
