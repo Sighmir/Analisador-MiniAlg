@@ -23,14 +23,17 @@
 
 // VARIAVEIS DO ANALISADOR SINTATICO
 
+// Define arquivos de saida e de entrada
 #define MINIALG "MiniAlg.txt"
 #define LEXICO "Lexico.txt"
 #define SINTATICO "Sintatico.txt"
 
+// Declara variaveis globais necessarias
 char **tokens;
 int n_tokens;
 int i_tokens = -1;
 
+// Declara funcoes que precisam ser declaradas
 bool expressao_simples();
 bool comando_composto();
 bool bloco();
@@ -39,7 +42,7 @@ bool bloco();
 ////////////////////////////////////// FUNCOES DO ANALISADOR //////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Funcao que le o arquivo
+// Funcao que le o arquivo do codigo
 char * lerCodigo(char *nome) {
     FILE *arquivo = fopen(nome, "r");
     char *codigo;
@@ -67,6 +70,7 @@ char * lerCodigo(char *nome) {
     return codigo;
 }
 
+// Funcao que conta quantidade de linhas em um arquivo
 int countLines(char *nome) {
     FILE *arquivo = fopen(nome, "r");
 	int lines = 0;
@@ -83,6 +87,7 @@ int countLines(char *nome) {
 	return lines;
 }
 
+// Funcao que le o arquivo de tokens
 char ** lerTokens(char *nome) {
 	n_tokens = countLines(nome);
     FILE *arquivo = fopen(nome, "r");
@@ -112,7 +117,7 @@ char ** lerTokens(char *nome) {
     return tokens;
 }
 
-// Funcao que escreve no arquivo
+// Funcao que escreve em um arquivo
 void escrever(char *nome, char *texto)
 {
 	FILE *arquivo = fopen(nome, "a");
@@ -121,6 +126,7 @@ void escrever(char *nome, char *texto)
 	fclose(arquivo);
 }
 
+// Funcao que limpa um arquivo
 void limpar(char *nome)
 {
 	FILE *arquivo = fopen(nome, "w");
@@ -129,6 +135,7 @@ void limpar(char *nome)
 	fclose(arquivo);
 }
 
+// Funcao que deleta o ultimo char de um char*
 char* deleteLastChar(char* word)
 {
     int i = 0;
@@ -141,6 +148,7 @@ char* deleteLastChar(char* word)
     return word;
 }
 
+// Divide um token dado um separador, no caso ,
 char **splitToken(char *string, int *num, char *sep)
 {
 	char *pch;
@@ -172,7 +180,7 @@ char **splitToken(char *string, int *num, char *sep)
 	return out;
 }
 
-// Funcao que retorna o valor do proximo token sem consumi-lo.
+// Funcao que verifica o proximo token sem consumi-lo.
 bool lookahead(char *token){
 	int num = 0;
 	char *tk = tokens[i_tokens+1];
@@ -187,12 +195,12 @@ bool lookahead(char *token){
 	}
 }
 
-// Funcao que retorna o valor do proximo token consumindo-o.
+// Funcao que verifica o proximo token consumindo-o.
 bool match(char *token){
 	int num = 0;
 	char *tk = tokens[i_tokens+1];
 	char * aux = (char *) malloc(255 * sizeof(char));
-	char **spt = splitToken(tk, &num, ",");
+	char **spt = splitToken(tk, &num, ","); // Tratamento para argumentos do token Ex: "identificador,correto" => ["identificador","correto"]
 	if (strcmp(tk,token) == 0) {
 		spt[0] = tk;
 	}
@@ -216,7 +224,7 @@ bool match(char *token){
 ////////////////////////////////////// ANALISADOR LEXICO //////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Funcao do analisador lexico
+// Funcao do analisador lexico que representa o automato, utilizando goto
 bool analisadorLexico(char *input, char *output){
 	limpar(output);
 	char *codigo = lerCodigo(input);
@@ -1119,6 +1127,7 @@ q164:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// ANALISADOR SINTATICO ///////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <fator>
 bool fator(){
 	if (lookahead("numero")) {
@@ -1480,6 +1489,7 @@ bool programa(){
 	return false;
 }
 
+// Funcao que imprime lista de tokens lidos no terminal
 void printTokens() {
 	int i;
 	for (i = 0; i < n_tokens; i++) {
@@ -1487,6 +1497,7 @@ void printTokens() {
 	}
 }
 
+// Funcao do analisador sintatico que retorna o resultado da analise
 bool analisadorSintatico(char *input, char *output){
 	limpar(output);
 	printf("\n\n\nINICIANDO ANALISE SINTATICA\n");
@@ -1506,7 +1517,7 @@ void alunosResponsaveis(){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////");
 }
 
-// Funcao main que chama a funcao programa para inicializar a analise lexica e sintatica.
+// Funcao main que chama as funcaoes para inicializar a analise lexica e sintatica.
 int main(){
 	if (analisadorLexico(MINIALG, LEXICO)) {
 		analisadorSintatico(LEXICO, SINTATICO);
