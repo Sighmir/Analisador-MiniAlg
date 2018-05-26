@@ -43,6 +43,11 @@ identificador,a
 =
 numero,1
 ;
+escreva
+(
+identificador,f
+)
+;
 se
 (
 identificador,a

@@ -6,6 +6,7 @@ programa correto
     inteiro : a , b , c ; 
     booleano : d , e , f ; 
     a = 1 ; 
+    escreva ( f ) ; 
     se ( a < 1 ) entao 
       a = 12 ; 
     fimse 

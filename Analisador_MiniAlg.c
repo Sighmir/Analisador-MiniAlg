@@ -47,6 +47,7 @@ typedef struct Escopo
 char **tokens;
 int n_tokens;
 int i_tokens = -1;
+char *exp_tipo = "";
 Escopo *escopo = NULL;
 
 // Declara funcoes que precisam ser declaradas
@@ -127,20 +128,17 @@ char ** lerTokens(char *nome) {
 
     if (arquivo == NULL) return NULL;
 	tokens = (char **)malloc(n_tokens * sizeof(char *));
-	
+	 
 	for (i = 0; i < n_tokens; i++) {
-		tokens[i] = (char *)malloc(255 * sizeof(char));
-		k = 0;
-		while ((c = fgetc(arquivo)) != EOF) {
-			if (c == '\n')
-			{
-				break;
-			} else if (c != ' ' && c != '\t' && c != 0){
-        		(tokens[i])[k++] = (char)c;
+		tokens[i] = (char*) malloc(40 * sizeof(char));
+		fscanf(arquivo, "%s", tokens[i]);
+		for (j = 0; j < 40; j++) {
+			if (tokens[i][j] == ' ' || tokens[i][j] == '\t' || tokens[i][j] == 0 || tokens[i][j] == '\r' || tokens[i][j] == '\n'){
+        		(tokens[i])[j] = '\0';
 			}
-    	}
+		}
+        printf("%d: %s\n", i, tokens[i]);
 	}
-
     fclose(arquivo);
 
     return tokens;
@@ -260,6 +258,7 @@ q0:
 		codigo[i] == 'z' || codigo[i] == 'Z'
 	) {
 		i++;
+		palavra[j++] = codigo[i];
 		goto q117;
 	} else if (
 		codigo[i] == '0' ||
@@ -938,7 +937,6 @@ q114:
 	}
 	
 q117:
-	palavra[j++] = codigo[i];
 	if (
 		codigo[i] == 'a' || codigo[i] == 'A' ||
 		codigo[i] == 'b' || codigo[i] == 'B' ||
@@ -968,6 +966,7 @@ q117:
 		codigo[i] == 'z' || codigo[i] == 'Z'
 	) {
 		i++;
+		palavra[j++] = codigo[i];
 		goto q117;
 	} else if (codigo[i] == ' ') {
 		char * aux = (char *) malloc(255 * sizeof(char));
@@ -1115,6 +1114,27 @@ void novaVariavel(char *tipo, char *identificador) {
 	(*escopo).i++;
 }
 
+void escrevaEscopos() {
+	int i, e = 0;
+	Escopo *presente = escopo;
+	printf("\n\nFUNCAO ESCREVA:\n");
+	printf("\nEXIBINDO ESCOPOS DO PRESENTE(0) AOS SEUS PARENTES(0++):\n");
+	while(presente) {
+		printf("\nESCOPO %d",e);
+		if (e == 0) {
+			printf(" (PRESENTE)\n");
+		} else {
+			printf(" (PARENTE)\n");
+		}
+		for (i = 0; i < (*presente).i; i++) {
+			printf("VARIAVEL %d> identificador: %s, tipo: %s\n", i, (*(*presente).variaveis[i]).identificador, (*(*presente).variaveis[i]).tipo);
+		}
+		presente = (*presente).parente;
+		e++;
+	}
+	printf("\nFIM FUNCAO ESCREVA\n\n");
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// ANALISADOR SINTATICO ///////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1196,34 +1216,61 @@ char * match(char *token){
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <fator>
-bool fator(){
-	if (lookahead("numero")) {
-		match("numero");
-		return true;
+bool fator(char *tipo){
+	if (strcmp(tipo, "") == 0) tipo = exp_tipo;
+	char * aux = (char *) malloc(255 * sizeof(char));
+	if (lookahead("identificador")) {
+		char *identificador = match("identificador");
+		Variavel *variavel = lookup(identificador,tipo);
+		if (strcmp(exp_tipo, "") == 0) exp_tipo = (*variavel).tipo;
+		if (variavel) {
+			return true;
+		}
 	} else if (lookahead("verdadeiro")) {
 		match("verdadeiro");
-		return true;
+		if ((strcmp(tipo,"booleano") == 0) ||
+		   (strcmp(tipo,"") == 0)) {
+			return true;
+		} else {
+			sprintf(aux, "ERRO SINTATICO,verdadeiro\n");
+			printf("%s",aux);
+			exit(-1);
+		}
 	} else if (lookahead("falso")) {
 		match("falso");
-		return true;
+		if ((strcmp(tipo,"booleano") == 0) ||
+		   (strcmp(tipo,"") == 0)) {
+			return true;
+		} else {
+			sprintf(aux, "ERRO SINTATICO,falso\n");
+			printf("%s",aux);
+			exit(-1);
+		}
+	} else if (lookahead("numero")) {
+		char *numero = match("numero");
+		if ((strcmp(tipo,"inteiro") == 0) ||
+		   (strcmp(tipo,"") == 0)) {
+			return true;
+		} else {
+			sprintf(aux, "ERRO SINTATICO,%s\n", numero);
+			printf("%s",aux);
+			exit(-1);
+		}
 	} else if (lookahead("(")) {
 		match("(");
-		if (expressao_simples()) {
+		if (expressao_simples(tipo)) {
 			if (match(")")) {
 				return true;
 			}
 		}
-	} else if (lookahead("identificador")) {
-		match("identificador");
-		return true;
 	}
 	return false;
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <termo>
-bool termo(){
+bool termo(char *tipo){
 	fator:
-	if (fator()) {
+	if (fator(tipo)) {
 		if (lookahead("mul")) {
 			match("mul");
 			goto fator;
@@ -1237,20 +1284,20 @@ bool termo(){
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <expressao simples>
-bool expressao_simples(){
+bool expressao_simples(char *tipo){
 	if (lookahead("+")) {
 		match("+");
 	} else if (lookahead("-")) {
 		match("-");
 	}
-	if (termo()) {
+	if (termo(tipo)) {
 		while(lookahead("+") || lookahead("-")){
 			if (lookahead("+")) {
 				match("+");
-				termo();
+				termo(tipo);
 			} else if (lookahead("-")) {
 				match("-");
-				termo();
+				termo(tipo);
 			}
 		}
 		return true;
@@ -1283,12 +1330,14 @@ bool relacao(){
 }
 
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <expressao>
-bool expressao(){
-	if (expressao_simples()){ 
+bool expressao(char *tipo){
+	exp_tipo = tipo;
+	if (expressao_simples(tipo)){ 
 		if (relacao()) {
-			if (expressao_simples()) {
+			if (expressao_simples(tipo)) {
 				return true;
 			}
+			return false;
 		}
 		return true;
 	}
@@ -1300,7 +1349,7 @@ bool comando_repetitivo(){
 	if (lookahead("enquanto")) {
 		match("enquanto");
 		if (match("(")) {
-			if (expressao()) {
+			if (expressao("")) {
 				if (match(")")) {
 					if (match("faca")) {
 						if (comando_composto()){
@@ -1321,7 +1370,7 @@ bool comando_condicional(){
 	if (lookahead("se")) {
 		match("se");
 		if (match("(")) {
-			if (expressao()) {
+			if (expressao("")) {
 				if (match(")")) {
 					if (match("entao")) {
 						if (comando_composto()){
@@ -1374,7 +1423,8 @@ bool lista_de_parametros(){
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <chamada de procedimento>
 bool chamada_de_procedimento(){
 	if (lookahead("identificador")){
-		if (match("identificador")) {
+		char *identificador = match("identificador");
+		if (lookup(identificador, "procedimento")) {
 			if (lista_de_parametros()) {
 				if (match(";")) {
 					return true;
@@ -1388,9 +1438,11 @@ bool chamada_de_procedimento(){
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <atribuicao>
 bool atribuicao(){
 	if (lookahead("identificador")){
-		if (match("identificador")) {
+		char *identificador = match("identificador");
+		Variavel *variavel = lookup(identificador, "");
+		if (variavel) {
 			if (match("=")) {
-				if (expressao()) {
+				if (expressao((*variavel).tipo)) {
 					if (match(";")) {
 						return true;
 					}
@@ -1410,6 +1462,7 @@ bool comando(){
 				if (lookup(identificador, "")){
 					if (match(")")) {
 						if (match(";")) {
+							escrevaEscopos();
 							return true;
 						}
 					}
@@ -1558,32 +1611,28 @@ bool bloco(){
 // Funcao que verifica se a proxima sequencia sintatica existente equivale a <programa>
 bool programa(){
 	if (match("programa")) {
-		if (match("identificador")) {
+		novoEscopo();
+		char *identificador = match("identificador");
+		if (identificador) {
+			novaVariavel("programa",identificador);
 			if ((bloco())) {
 				if (match("fimprograma")) {
+					fimEscopo();
 					return true;
 				}
 			}
 		}
 	}
+	fimEscopo();
 	return false;
-}
-
-// Funcao que imprime lista de tokens lidos no terminal
-void printTokens() {
-	int i;
-	for (i = 0; i < n_tokens; i++) {
-		printf("Token %d: %s\n", i, tokens[i]);
-	}
 }
 
 // Funcao do analisador sintatico que retorna o resultado da analise
 bool analisadorSintatico(char *input, char *output){
 	limpar(output);
 	printf("\n\n\nINICIANDO ANALISE SINTATICA\n");
+	printf("\nLENDO TOKENS:\n\n");
 	tokens = lerTokens(input);
-	printf("\nTOKENS LIDOS:\n\n");
-	printTokens();
 	printf("\nGERANDO TOKENS:\n\n");
 	return programa();
 }
@@ -1600,8 +1649,10 @@ void alunosResponsaveis(){
 // Funcao main que chama as funcaoes para inicializar a analise lexica e sintatica.
 int main(){
 	if (analisadorLexico(MINIALG, LEXICO)) {
-		analisadorSintatico(LEXICO, SINTATICO);
+		if (analisadorSintatico(LEXICO, SINTATICO)) {
+			alunosResponsaveis();
+			return 0;
+		}
 	}
-	alunosResponsaveis();
-	return 0;
+	return -1;
 }
