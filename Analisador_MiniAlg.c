@@ -30,12 +30,14 @@
 
 // Declara structs necessarias
 
+//Struct Variavel, define uma variavel com tipo e identificador, e possivelmente valor se necessario.
 typedef struct Variavel
 {
 	char *identificador;
 	char *tipo;
 } Variavel;
 
+//Struct Escopo, possui um ponteiro para seu escopo parente, um contador de variaveis i, e uma lista de variaveis.
 typedef struct Escopo
 {
 	int i;
@@ -44,16 +46,16 @@ typedef struct Escopo
 } Escopo;
 
 // Declara variaveis globais necessarias
-char **tokens;
-int n_tokens;
-int i_tokens = -1;
-char *exp_tipo = "";
-Escopo *escopo = NULL;
+char **tokens; // Lista de tokens detectados
+int n_tokens; // Numero maximo de tokens
+int i_tokens = -1; // Indice do token a ser visitado
+char *exp_tipo = ""; // Ultimo tipo detectado em uma expressao
+Escopo *escopo = NULL; // O escopo atual
 
 // Declara funcoes que precisam ser declaradas
-bool expressao_simples();
-bool comando_composto();
-bool bloco();
+bool expressao_simples(); // Verifica uma expressao simples
+bool comando_composto(); // Verifica um comando composto
+bool bloco(); // Verifica um bloco de codigo
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// FUNCOES DE LEITURA DE ARQUIVO //////////////////////////////////
@@ -111,7 +113,7 @@ char* deleteLastChar(char* word)
     while(word[i] != '\0')
     {
         i++;
-         
+
     }
     word[i-1] = '\0';
     return word;
@@ -128,7 +130,7 @@ char ** lerTokens(char *nome) {
 
     if (arquivo == NULL) return NULL;
 	tokens = (char **)malloc(n_tokens * sizeof(char *));
-	 
+
 	for (i = 0; i < n_tokens; i++) {
 		tokens[i] = (char*) malloc(40 * sizeof(char));
 		fscanf(arquivo, "%s", tokens[i]);
@@ -267,7 +269,7 @@ q0:
 		codigo[i] == '3' ||
 		codigo[i] == '4' ||
 		codigo[i] == '5' ||
-		codigo[i] == '6' || 
+		codigo[i] == '6' ||
 		codigo[i] == '7' ||
 		codigo[i] == '8' ||
 		codigo[i] == '9'
@@ -1072,13 +1074,14 @@ q164:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Funcao que verifica se uma variavel existe no escopo ou seus parentes.
+// Retorna a variavel se ela existe, se nao para a execucao com erro semantico.
 Variavel *lookup(char *identificador, char *tipo) {
 	int i;
 	Escopo *presente = escopo;
 	while(presente) {
 		for (i = 0; i < (*presente).i; i++) {
 			if ( strcmp((*(*presente).variaveis[i]).identificador,identificador) == 0 ) {
-				if ((strcmp(tipo,"") == 0) || 
+				if ((strcmp(tipo,"") == 0) ||
 				( strcmp((*(*presente).variaveis[i]).tipo,tipo) == 0 )) {
 					return (*presente).variaveis[i];
 				}
@@ -1114,6 +1117,7 @@ void novaVariavel(char *tipo, char *identificador) {
 	(*escopo).i++;
 }
 
+// Funcao escreve que escreve escopos e suas variaveis
 void escrevaEscopos() {
 	int i, e = 0;
 	Escopo *presente = escopo;
@@ -1140,6 +1144,7 @@ void escrevaEscopos() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Divide um token dado um separador, no caso ,
+// Retorna array com ["token","argumento"]
 char **splitToken(char *string, int *num, char *sep)
 {
 	char *pch;
@@ -1187,6 +1192,7 @@ bool lookahead(char *token){
 }
 
 // Funcao que verifica o proximo token consumindo-o.
+// Retorna o token ou seu argumento se existir algum, ou para execucao caso erro sintatico
 char * match(char *token){
 	int num = 0;
 	char *tk = tokens[i_tokens+1];
@@ -1486,7 +1492,7 @@ bool comando_composto(){
 	if (comando()) {
 		while (comando()){
 			continue;
-		} 
+		}
 		return true;
 	}
 	return false;
@@ -1549,7 +1555,7 @@ bool declaracao_de_procedimento(){
 bool parte_de_declaracoes_de_subrotinas(){
 	while (declaracao_de_procedimento()){
 		continue;
-	} 
+	}
 	return true;
 }
 
@@ -1589,7 +1595,7 @@ bool declaracao_de_variaveis(){
 bool parte_de_declaracoes_de_variaveis(){
 	while (declaracao_de_variaveis()){
 		continue;
-	} 
+	}
 	return true;
 }
 
@@ -1633,7 +1639,7 @@ bool analisadorSintatico(char *input, char *output){
 	printf("\n\n\nINICIANDO ANALISE SINTATICA\n");
 	printf("\nLENDO TOKENS:\n\n");
 	tokens = lerTokens(input);
-	printf("\nGERANDO TOKENS:\n\n");
+	printf("\nANALISANDO TOKENS:\n\n");
 	return programa();
 }
 
